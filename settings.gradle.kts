@@ -1,3 +1,2 @@
 rootProject.name = "magic-marbles"
-include("core", "ui")
-include("core-impl")
+include("core", "core-impl", "ui")

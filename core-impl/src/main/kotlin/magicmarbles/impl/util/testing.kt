@@ -18,7 +18,7 @@ fun main() {
     val fieldBuilder = TestFieldBuilder(FieldImpl.Factory)
     val extendedSettingsValidator = ExtendedSettingsValidator(config)
     val gameFactory = GameFactoryImpl(extendedSettingsValidator, fieldBuilder)
-    val settings = ExtendedSettingsImpl(3, { removed -> removed * removed }, 100, 3, 3)
+    val settings = ExtendedSettingsImpl(3, 3, 3, { removed -> removed * removed }, 100)
     val game = gameFactory.createGame(settings)
     if (game is Success) {
         game.game.move(0, 0)

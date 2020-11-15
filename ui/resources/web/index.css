@@ -1,0 +1,23 @@
+
+#game-grid {
+    display: grid;
+    grid-column-gap: 10px;
+}
+
+.no-game {
+    grid-template-columns: 1fr;
+}
+
+.game-running {
+    grid-template-columns: 2fr 1fr;
+}
+
+#settings {
+    display: grid;
+    grid-row-gap: 10px;
+    grid-template-columns: auto auto;
+}
+
+#configure {
+    grid-column: 1 / 3;
+}

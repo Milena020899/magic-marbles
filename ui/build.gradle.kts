@@ -5,10 +5,11 @@ val logback_version: String by project
 plugins {
     application
     kotlin("jvm") version "1.4.10"
+    kotlin("plugin.serialization") version "1.4.10"
 }
 
 group = "magic-marbles"
-version = "1.0-SNAPSHOT"
+version = "0.0.1"
 
 application {
     mainClassName = "io.ktor.server.netty.EngineMain"
@@ -17,10 +18,13 @@ application {
 repositories {
     mavenLocal()
     jcenter()
+    google()
     maven { url = uri("https://kotlin.bintray.com/ktor") }
+    maven { url = uri("https://dl.bintray.com/kotlin/kotlin-eap") }
 }
 
 dependencies {
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.0.1")
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version")
     implementation("io.ktor:ktor-server-netty:$ktor_version")
     implementation("ch.qos.logback:logback-classic:$logback_version")
@@ -29,6 +33,8 @@ dependencies {
     implementation("io.ktor:ktor-server-sessions:$ktor_version")
     implementation("io.ktor:ktor-websockets:$ktor_version")
     testImplementation("io.ktor:ktor-server-tests:$ktor_version")
+    implementation(project(":core-impl"))
+    implementation(project(":core"))
 }
 
 kotlin.sourceSets["main"].kotlin.srcDirs("src")
