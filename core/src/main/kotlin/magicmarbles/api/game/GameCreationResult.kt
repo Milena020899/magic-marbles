@@ -1,11 +1,9 @@
 package magicmarbles.api.game
 
-import magicmarbles.api.settings.Settings
-
 
 interface GameCreationResult
-interface Success<TSettings : Settings> : GameCreationResult {
-    val game: Game<TSettings>
+interface Success : GameCreationResult {
+    val game: Game
 }
 
 interface Failure : GameCreationResult {

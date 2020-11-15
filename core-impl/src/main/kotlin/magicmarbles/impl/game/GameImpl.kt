@@ -3,40 +3,38 @@ package magicmarbles.impl.game
 import magicmarbles.api.field.FieldBuilder
 import magicmarbles.api.field.MoveableField
 import magicmarbles.api.game.Game
-import magicmarbles.api.game.GameSate
+import magicmarbles.api.game.MoveResult
 import magicmarbles.impl.settings.ExtendedSettings
 
 class GameImpl(
     private val fieldBuilder: FieldBuilder,
     private val settings: ExtendedSettings
-) : Game<ExtendedSettings> {
-    private enum class Status { Uninitialized, Running, Over }
+) : Game {
 
-    private var field: MoveableField = fieldBuilder.build(settings.width, settings.height)
-    private var points = 0
-    private var state = Status.Uninitialized
+    private var field: MoveableField = createField()
+    private var points: Int = 0
+    private var over: Boolean = false
 
-    private fun checkState(): GameSate? = when (state) {
-        Status.Uninitialized -> InvalidGameStateImpl("Game has not been started")
-        Status.Over -> InvalidGameStateImpl("Game is already over")
-        else -> null
-    }
 
-    override fun move(column: Int, row: Int): GameSate {
-        val res = checkState()
-        if (res != null) return res
-
-        val removedMarbles = field.move(column, row) ?: return InvalidMoveStateImpl(field, points)
+    override fun move(column: Int, row: Int): MoveResult {
+        if (over) return GameAlreadyOverImpl(field, points)
+        val removedMarbles = field.move(column, row) ?: return InvalidMoveImpl(field, points)
         points += settings.pointCalculation(removedMarbles)
 
         return if (!field.movesPossible(settings.minConnectedMarbles)) {
-            state = Status.Over
-            points - settings.remainingMarbleReduction * field.marbleCount()
-            GameOverStateImpl(field, points)
-        } else SuccessfulMoveStateImpl(field, points)
+            over = true
+            points -= settings.remainingMarbleReduction * field.marbleCount()
+            GameOverImpl(field, points)
+        } else {
+            ValidMoveImpl(field, points)
+        }
     }
 
-    override fun restart(): GameSate {
-        TODO("Not yet implemented")
+    private fun createField(): MoveableField = fieldBuilder.build(settings.width, settings.height)
+
+    override fun restart() {
+        field = createField()
+        points = 0
+        over = false
     }
 }

@@ -12,3 +12,4 @@ fun <T> MutableList<T>.countRemovedBy(predicate: (T) -> Boolean): Int {
 fun <A> MutableList<A>.prepend(count: Int, creator: () -> A) {
     addAll(0, List(count) { creator() })
 }
+

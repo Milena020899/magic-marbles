@@ -1,9 +1,10 @@
 package magicmarbles.impl.util
 
-import magicmarbles.api.field.impl.FieldImpl
-import magicmarbles.impl.GameImpl
-import magicmarbles.api.settings.impl.ExtendedSettingsImpl
-import magicmarbles.api.settings.impl.ExtendedSettingsValidator
+import magicmarbles.impl.field.FieldImpl
+import magicmarbles.impl.game.GameFactoryImpl
+import magicmarbles.impl.game.Success
+import magicmarbles.impl.settings.ExtendedSettingsImpl
+import magicmarbles.impl.settings.ExtendedSettingsValidator
 
 fun main() {
     val config = MapConfig(
@@ -14,13 +15,16 @@ fun main() {
         )
     )
 
-    val fieldFactory = TestFieldBuilder(FieldImpl.Factory)
+    val fieldBuilder = TestFieldBuilder(FieldImpl.Factory)
     val extendedSettingsValidator = ExtendedSettingsValidator(config)
-    val game = GameImpl(fieldFactory, extendedSettingsValidator)
+    val gameFactory = GameFactoryImpl(extendedSettingsValidator, fieldBuilder)
+    val settings = ExtendedSettingsImpl(3, { removed -> removed * removed }, 100, 3, 3)
+    val game = gameFactory.createGame(settings)
+    if (game is Success) {
+        game.game.move(0, 0)
+        game.game.move(2, 0)
+        game.game.move(0, 0)
+        game.game.move(1, 0)
+    }
 
-    val settings = ExtendedSettingsImpl(-1, { removed -> removed * removed }, 100, 3, 3)
-    val x = game.start(settings)
-    game.move(0, 0)
-    game.move(1, 0)
-    game.move(2, 0)
 }

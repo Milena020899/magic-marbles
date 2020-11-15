@@ -1,7 +1,6 @@
 package magicmarbles.impl.util
 
 import magicmarbles.api.field.*
-import magicmarbles.api.game.field.*
 
 class TestFieldBuilder(private val fieldProvider: ModifiableFieldFactory) : FieldBuilder {
     override fun build(width: Int, height: Int): MoveableField {

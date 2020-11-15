@@ -18,11 +18,12 @@ class FieldImpl private constructor(
 
         marblesToRemove.forEach { (_r, _c) -> this[_r, _c] = null }
 
-        val removedMarbles = marbleField.map {
-            val removedMarbles = it.countRemovedBy { marble -> marble == null }
-            it.prepend(removedMarbles) { null }
-            removedMarbles
-        }.sum()
+        val removedMarbles =
+            marbleField.map {
+                val removedMarbles = it.countRemovedBy { marble -> marble == null }
+                it.prepend(removedMarbles) { null }
+                removedMarbles
+            }.sum()
 
         val removedColumns = marbleField.countRemovedBy { it.all { marble -> marble == null } }
         marbleField.prepend(removedColumns) { MutableList(height) { null } }
@@ -88,9 +89,10 @@ class FieldImpl private constructor(
     }
 
     override fun map(transformer: (Int, Int) -> Marble?) {
-        marbleField.forEachIndexed { columnIndex, column ->
-            column.indices
-                .forEach { rowIndex -> this[columnIndex, rowIndex] = transformer(columnIndex, columnIndex) }
+        marbleField.indices.forEach { column ->
+            marbleField[column].indices.forEach { row ->
+                this[column, row] = transformer(column, row)
+            }
         }
     }
 
