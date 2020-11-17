@@ -7,15 +7,19 @@ import io.ktor.routing.*
 import io.ktor.sessions.*
 import io.ktor.util.*
 import io.ktor.websocket.*
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.consumeEach
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.decodeFromJsonElement
+import magicmarbles.impl.MapConfig
 import magicmarbles.impl.field.FieldImpl
 import magicmarbles.impl.field.RandomFieldBuilder
 import magicmarbles.impl.game.GameFactoryImpl
-import magicmarbles.impl.settings.ExtendedSettingsValidator
-import magicmarbles.impl.util.MapConfig
-import magicmarbles.ui.dto.Message
+import magicmarbles.impl.settings.SettingsValidatorImpl
+import magicmarbles.ui.dto.CoordinateDto
+import magicmarbles.ui.dto.MessageDto
+import magicmarbles.ui.dto.SettingsDto
 import java.time.Duration
 
 fun main(args: Array<String>): Unit = io.ktor.server.netty.EngineMain.main(args)
@@ -26,7 +30,7 @@ class MagicMarblesApplication {
 
     val gameServer = GameServer(
         GameFactoryImpl(
-            ExtendedSettingsValidator(
+            SettingsValidatorImpl(
                 MapConfig(
                     mapOf(
                         "minFieldSize" to Pair(3, 3),
@@ -39,6 +43,7 @@ class MagicMarblesApplication {
         )
     )
 
+    @ExperimentalCoroutinesApi
     @KtorExperimentalAPI
     fun Application.main() {
         install(WebSockets) {
@@ -56,7 +61,6 @@ class MagicMarblesApplication {
         }
 
         routing {
-
             webSocket("/ws") {
                 val session = call.sessions.get<GameSession>()
                 if (session == null) {
@@ -70,7 +74,7 @@ class MagicMarblesApplication {
                     try {
                         if (frame is Frame.Text) {
                             print(frame.data)
-                            onReceived(Json.decodeFromString(frame.readText()))
+                            onReceived(session.id, Json.decodeFromString(frame.readText()))
                         }
                     } catch (ex: Exception) {
                     }
@@ -85,12 +89,21 @@ class MagicMarblesApplication {
         }
     }
 
-    private suspend fun onReceived(message: Message) {
+    private suspend fun onReceived(id: String, message: MessageDto) {
         when (message.type) {
-            "reconfigure" -> TODO()
-            "startGame" -> TODO()
-            "move" -> TODO()
-            "hover" -> TODO()
+            "reconfigure" -> {
+                val settings = Json.decodeFromJsonElement<SettingsDto>(message.payload)
+                gameServer.configureAndStart(id, settings)
+            }
+            "startGame" -> {
+
+            }
+            "move" -> {
+                val coordinate = Json.decodeFromJsonElement<CoordinateDto>(message.payload)
+            }
+            "hover" -> {
+                val coordinate = Json.decodeFromJsonElement<CoordinateDto>(message.payload)
+            }
         }
     }
 //            get("/") {

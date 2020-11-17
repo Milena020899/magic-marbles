@@ -1,9 +1,8 @@
 package magicmarbles.impl.settings
 
-import magicmarbles.api.settings.SettingsValidator
-import magicmarbles.impl.util.Configuration
+import magicmarbles.impl.Configuration
 
-class ExtendedSettingsValidator(private val configuration: Configuration) : SettingsValidator<ExtendedSettings> {
+class SettingsValidatorImpl(configuration: Configuration) : SettingsValidator {
 
     private val minFieldSize: Pair<Int, Int> = configuration["minFieldSize"]
     private val remainingMarbleReduction: Pair<Int, Int> = configuration["remainingMarbleReduction"]

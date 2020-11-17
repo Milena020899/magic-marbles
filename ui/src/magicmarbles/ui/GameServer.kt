@@ -7,6 +7,8 @@ import magicmarbles.api.game.Game
 import magicmarbles.api.game.GameFactory
 import magicmarbles.impl.settings.ExtendedSettings
 import magicmarbles.impl.settings.ExtendedSettingsImpl
+import magicmarbles.ui.dto.CoordinateDto
+import magicmarbles.ui.dto.GameStateDto
 import magicmarbles.ui.dto.SettingsDto
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.CopyOnWriteArrayList
@@ -39,11 +41,38 @@ class GameServer(private val gameFactory: GameFactory<ExtendedSettings>) {
     }
 
 
-    suspend fun reconfigure(id: String) {}
+    suspend fun configureAndStart(id: String, settings: SettingsDto) {
+        //todo use correct settings
+        val game = activeGames.computeIfAbsent(id) { gameFactory.createGame(defaultSettings)!! }
+        val res = Json.encodeToString(game.toDto())
+        forEachConnection(id) { it.send(res) }
+    }
 
-    suspend fun startGame(id: String) {}
+    suspend fun restartGame(id: String) {
+        val game = activeGames[id] ?: return
+        game.restart()
 
-    suspend fun move(id: String) {}
+    }
 
-    suspend fun hover(id: String) {}
+    suspend fun move(id: String, coordinate: CoordinateDto) {
+
+    }
+
+    suspend fun hover(id: String, coordinate: CoordinateDto) {}
+
+    private fun Game.toDto(): GameStateDto {
+        val colorList = this.field.field
+            .map { column ->
+                column.map { marble -> marble?.color?.hex ?: "transparent" }
+            }
+
+        return GameStateDto(colorList, this.points)
+    }
+
+    private suspend fun forEachConnection(id: String, func: suspend (WebSocketSession) -> Unit) {
+        val connections = activeConnections[id] ?: return
+        connections.forEach {
+            func(it)
+        }
+    }
 }

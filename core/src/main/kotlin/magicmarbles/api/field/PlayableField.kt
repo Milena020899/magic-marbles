@@ -1,5 +1,5 @@
 package magicmarbles.api.field
 
-interface MoveableField : Field {
+interface PlayableField : Field {
     fun move(column: Int, row: Int): Int?
 }

@@ -3,7 +3,7 @@ package magicmarbles.impl.util
 import magicmarbles.api.field.*
 
 class TestFieldBuilder(private val fieldProvider: ModifiableFieldFactory) : FieldBuilder {
-    override fun build(width: Int, height: Int): MoveableField {
+    override fun build(width: Int, height: Int): PlayableField {
         return fieldProvider.createEmptyField(width, height).apply {
             map { column, _ ->
                 when (column) {

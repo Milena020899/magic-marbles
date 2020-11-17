@@ -35,7 +35,7 @@ class Game {
 
     reconfigure(settings) {
         console.log("configure")
-        let req = {type: "reconfigure", payload: JSON.stringify(settings)}
+        let req = {type: "reconfigure", payload: settings}
         this.websocket.send(JSON.stringify(req))
     }
 }
