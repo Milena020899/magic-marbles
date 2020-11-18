@@ -1,8 +1,7 @@
 package magicmarbles.api.field
 
-interface FieldBuilder {
-    fun build(
-        width: Int,
-        height: Int,
-    ): PlayableField?
+import magicmarbles.api.settings.Settings
+
+interface FieldBuilder<TSettings : Settings> {
+    fun build(settings: TSettings): PlayableField?
 }

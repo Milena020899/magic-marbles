@@ -17,7 +17,7 @@ class GameImpl(
         val removedMarbles = field.move(column, row) ?: return InvalidMoveImpl
         points += settings.pointCalculation(removedMarbles)
 
-        return if (!field.movesPossible(settings.minConnectedMarbles)) {
+        return if (!field.movesPossible()) {
             over = true
             points -= settings.remainingMarbleReduction * field.marbleCount()
             GameOverImpl

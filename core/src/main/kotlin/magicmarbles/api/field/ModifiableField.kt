@@ -18,5 +18,5 @@ interface ModifiableField : PlayableField {
 }
 
 interface ModifiableFieldFactory {
-    fun createEmptyField(width: Int, height: Int): ModifiableField
+    fun createEmptyField(width: Int, height: Int, minConnected: Int): ModifiableField
 }
