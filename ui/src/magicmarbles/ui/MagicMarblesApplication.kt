@@ -14,9 +14,9 @@ import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.decodeFromJsonElement
 import magicmarbles.impl.MapConfig
 import magicmarbles.impl.field.FieldImpl
-import magicmarbles.impl.field.RandomFieldBuilder
 import magicmarbles.impl.game.GameFactoryImpl
 import magicmarbles.impl.settings.SettingsValidatorImpl
+import magicmarbles.impl.util.TestFieldBuilder
 import magicmarbles.ui.dto.CoordinateDto
 import magicmarbles.ui.dto.MessageDto
 import magicmarbles.ui.dto.SettingsDto
@@ -39,7 +39,7 @@ class MagicMarblesApplication {
                     )
                 )
             ),
-            RandomFieldBuilder(FieldImpl.Factory)
+            TestFieldBuilder(FieldImpl.Factory)
         )
     )
 
@@ -103,6 +103,7 @@ class MagicMarblesApplication {
             }
             "hover" -> {
                 val coordinate = Json.decodeFromJsonElement<CoordinateDto>(message.payload)
+                gameServer.hover(id, coordinate)
             }
         }
     }

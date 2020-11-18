@@ -1,19 +1,61 @@
 
-#game-grid {
+html, body {
+    height: 100%;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+#app {
+    padding: 4px;
+    height: calc(100% - 8px);
+    width: calc(100% - 8px);
+}
+
+#game-container {
     display: grid;
-    grid-column-gap: 10px;
+    grid-row-gap: 10px;
+    grid-template-rows: 200px 1fr;
+    grid-template-columns: 1fr 350px;
+    grid-template-areas:
+            "game settings"
+            "game .";
+    height: 100%;
+    width: 100%;
 }
 
-.no-game {
-    grid-template-columns: 1fr;
+.content-wrapper {
+    display: flex;
+    justify-content: center;
+    grid-area: game;
+    align-items: center;
+    gap: 5px;
 }
 
-.game-running {
-    grid-template-columns: 2fr 1fr;
+#no-game-message {
+    font-size: 30px;
 }
+
+.column {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.marble {
+    width: 50px;
+    height: 50px;
+    border-radius: 100%;
+}
+
+.hovered-marble {
+
+}
+
 
 #settings {
     display: grid;
+    grid-area: settings;
     grid-row-gap: 10px;
     grid-template-columns: auto auto;
 }

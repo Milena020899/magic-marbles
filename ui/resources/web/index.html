@@ -1,25 +1,43 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <script type="text/javascript" src="index.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+
     <script type="text/javascript" src="jquery.min.js"></script>
     <title>Magic Marble</title>
     <link rel="stylesheet" href="index.css">
 </head>
-<body onload="init()">
-<main id="game-grid" class="no-game">
-    <div id="game-field"></div>
-    <form id="settings">
-        <label for="width">Field Width</label>
-        <input id="width" type="number" min="0" value="10" name="width">
-        <label for="height">Field Height</label>
-        <input id="height" type="number" min="0" value="10" name="height">
-        <label for="connectedMarbles">Minimum of connected marbles to remove</label>
-        <input id="connectedMarbles" type="number" min="0" value="3" name="connectedMarbles">
-        <label for="remainingMarbleDeduction">Remaining marble point reduction</label>
-        <input id="remainingMarbleDeduction" type="number" min="0" value="50" name="remainingMarbleDeduction">
-        <button id="configure" type="submit" name="reconfigure">Start</button>
-    </form>
+<body>
+<main id="app">
+    <div id="game-container">
+        <div class="content-wrapper" v-if="gameRunning">
+            <div class="column" v-for="(col, colIndex) in field">
+                <div class="marble"
+                     @mouseenter="marble ? onHover(colIndex, rowIndex) : null"
+                     @mouseleave="marble ? endHover() : null"
+                     @click="marble ? marbleSelected : null"
+                     v-for="(marble, rowIndex) in col"
+                     :style="marbleStyle(marble)"></div>
+            </div>
+        </div>
+        <div class="content-wrapper" v-else>
+            <div id="no-game-message">No Game Running</div>
+        </div>
+        <form id="settings" @submit="settingsSubmit">
+            <label for="width">Field Width</label>
+            <input id="width" v-model="settings.width" type="number" min="0" value="10" name="width">
+            <label for="height">Field Height</label>
+            <input id="height" v-model="settings.height" type="number" min="0" value="10" name="height">
+            <label for="connectedMarbles">Minimum of connected marbles to remove</label>
+            <input id="connectedMarbles" v-model="settings.connectedMarbles" type="number" min="0" value="3"
+                   name="connectedMarbles">
+            <label for="remainingMarbleDeduction">Remaining marble point reduction</label>
+            <input id="remainingMarbleDeduction" v-model="settings.remainingMarbleDeduction" type="number" min="0"
+                   value="50" name="remainingMarbleDeduction">
+            <button id="configure" type="submit" name="reconfigure">Start</button>
+        </form>
+    </div>
 </main>
+<script type="text/javascript" src="index.js"></script>
 </body>
 </html>
