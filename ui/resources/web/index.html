@@ -1,43 +1,54 @@
 <!DOCTYPE html>
 <html>
-<head>
-    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
-
-    <script type="text/javascript" src="jquery.min.js"></script>
-    <title>Magic Marble</title>
-    <link rel="stylesheet" href="index.css">
-</head>
-<body>
-<main id="app">
-    <div id="game-container">
-        <div class="content-wrapper" v-if="gameRunning">
-            <div class="column" v-for="(col, colIndex) in field">
-                <div class="marble"
-                     @mouseenter="marble ? onHover(colIndex, rowIndex) : null"
-                     @mouseleave="marble ? endHover() : null"
-                     @click="marble ? marbleSelected(colIndex, rowIndex) : null"
-                     v-for="(marble, rowIndex) in col"
-                     :style="marbleStyle(marble)"></div>
+    <head>
+        <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+        <title>Magic Marble</title>
+        <link rel="stylesheet" href="index.css" />
+    </head>
+    <body>
+        <main id="app">
+            <h1 id="game-header">Magic Marbles</h1>
+            <settings
+                v-if="settingsVisible"
+                :initial-settings="storedSettings"
+                :title="settingsConfig.title"
+                :closeable="settingsConfig.closeable"
+                :button-text="settingsConfig.buttonText"
+                @close-settings="settingsClose"
+            ></settings>
+            <div class="content-wrapper">
+                <div class="game-container">
+                    <div class="points">
+                        Points: {{gameRunning ? points : '-'}}
+                    </div>
+                    <button
+                        :disabled="!gameRunning"
+                        @click="changeSettingsMidGame"
+                        class="reconfigure"
+                    >
+                        Reconfigure
+                    </button>
+                    <button :disabled="!gameRunning" class="restart">
+                        Restart Game
+                    </button>
+                    <div class="game-field" v-if="gameRunning">
+                        <div class="column" v-for="(col, colIndex) in field">
+                            <div
+                                class="marble"
+                                @mouseenter="marble ? onHover(colIndex, rowIndex) : null"
+                                @mouseleave="marble ? endHover() : null"
+                                @click="marble ? marbleSelected(colIndex, rowIndex) : null"
+                                v-for="(marble, rowIndex) in col"
+                                :style="marbleStyle(marble)"
+                            ></div>
+                        </div>
+                    </div>
+                    <div class="no-game-message" v-else>No Running Game</div>
+                </div>
             </div>
-        </div>
-        <div class="content-wrapper" v-else>
-            <div id="no-game-message">No Game Running</div>
-        </div>
-        <form id="settings" @submit="settingsSubmit">
-            <label for="width">Field Width</label>
-            <input id="width" v-model="settings.width" type="number" min="0" value="10" name="width">
-            <label for="height">Field Height</label>
-            <input id="height" v-model="settings.height" type="number" min="0" value="10" name="height">
-            <label for="connectedMarbles">Minimum of connected marbles to remove</label>
-            <input id="connectedMarbles" v-model="settings.connectedMarbles" type="number" min="0" value="3"
-                   name="connectedMarbles">
-            <label for="remainingMarbleDeduction">Remaining marble point reduction</label>
-            <input id="remainingMarbleDeduction" v-model="settings.remainingMarbleDeduction" type="number" min="0"
-                   value="50" name="remainingMarbleDeduction">
-            <button id="configure" type="submit" name="reconfigure">Start</button>
-        </form>
-    </div>
-</main>
-<script type="text/javascript" src="index.js"></script>
-</body>
+        </main>
+        <script type="text/javascript" src="modal.js"></script>
+        <script type="text/javascript" src="settings.js"></script>
+        <script type="text/javascript" src="index.js"></script>
+    </body>
 </html>

@@ -1,113 +1,342 @@
 const app = new Vue({
-    el: "#app",
+    el: '#app',
     data: {
         websocket: null,
-        gameRunning: false,
-        field: [],
-        points: 0,
-        settings: {
+        gameRunning: true,
+        storedSettings: {
             width: 0,
             height: 0,
             connectedMarbles: 0,
             remainingMarbleDeduction: 1,
         },
+        settingsVisible: false,
+        field: [
+            [null, { color: 'red' }, { color: 'red' }],
+            [
+                { color: 'red' },
+                { color: 'red' },
+                { color: 'red' },
+                { color: 'red' },
+                { color: 'red' },
+                { color: 'red' },
+                { color: 'red' },
+                { color: 'red' },
+                { color: 'red' },
+            ],
+            [
+                { color: 'red' },
+                { color: 'red' },
+                { color: 'red' },
+                { color: 'red' },
+                { color: 'red' },
+                { color: 'red' },
+                { color: 'red' },
+                { color: 'red' },
+                { color: 'red' },
+            ],
+            [
+                { color: 'red' },
+                { color: 'red' },
+                { color: 'red' },
+                { color: 'red' },
+                { color: 'red' },
+                { color: 'red' },
+                { color: 'red' },
+                { color: 'red' },
+                { color: 'red' },
+            ],
+            [
+                { color: 'red' },
+                { color: 'red' },
+                { color: 'red' },
+                { color: 'red' },
+                { color: 'red' },
+                { color: 'red' },
+                { color: 'red' },
+                { color: 'red' },
+                { color: 'red' },
+            ],
+            [
+                { color: 'red' },
+                { color: 'red' },
+                { color: 'red' },
+                { color: 'red' },
+                { color: 'red' },
+                { color: 'red' },
+                { color: 'red' },
+                { color: 'red' },
+                { color: 'red' },
+            ],
+            [
+                { color: 'red' },
+                { color: 'red' },
+                { color: 'red' },
+                { color: 'red' },
+                { color: 'red' },
+                { color: 'red' },
+                { color: 'red' },
+                { color: 'red' },
+                { color: 'red' },
+            ],
+            [
+                { color: 'red' },
+                { color: 'red' },
+                { color: 'red' },
+                { color: 'red' },
+                { color: 'red' },
+                { color: 'red' },
+                { color: 'red' },
+                { color: 'red' },
+                { color: 'red' },
+            ],
+            [
+                { color: 'red' },
+                { color: 'red' },
+                { color: 'red' },
+                { color: 'red' },
+                { color: 'red' },
+                { color: 'red' },
+                { color: 'red' },
+                { color: 'red' },
+                { color: 'red' },
+            ],
+            [
+                { color: 'red' },
+                { color: 'red' },
+                { color: 'red' },
+                { color: 'red' },
+                { color: 'red' },
+                { color: 'red' },
+                { color: 'red' },
+                { color: 'red' },
+                { color: 'red' },
+            ],
+            [
+                { color: 'red' },
+                { color: 'red' },
+                { color: 'red' },
+                { color: 'red' },
+                { color: 'red' },
+                { color: 'red' },
+                { color: 'red' },
+                { color: 'red' },
+                { color: 'red' },
+            ],
+            [
+                { color: 'red' },
+                { color: 'red' },
+                { color: 'red' },
+                { color: 'red' },
+                { color: 'red' },
+                { color: 'red' },
+                { color: 'red' },
+                { color: 'red' },
+                { color: 'red' },
+            ],
+            [
+                { color: 'red' },
+                { color: 'red' },
+                { color: 'red' },
+                { color: 'red' },
+                { color: 'red' },
+                { color: 'red' },
+                { color: 'red' },
+                { color: 'red' },
+                { color: 'red' },
+            ],
+            [
+                { color: 'red' },
+                { color: 'red' },
+                { color: 'red' },
+                { color: 'red' },
+                { color: 'red' },
+                { color: 'red' },
+                { color: 'red' },
+                { color: 'red' },
+                { color: 'red' },
+            ],
+            [
+                { color: 'red' },
+                { color: 'red' },
+                { color: 'red' },
+                { color: 'red' },
+                { color: 'red' },
+                { color: 'red' },
+                { color: 'red' },
+                { color: 'red' },
+                { color: 'red' },
+            ],
+            [
+                { color: 'red' },
+                { color: 'red' },
+                { color: 'red' },
+                { color: 'red' },
+                { color: 'red' },
+                { color: 'red' },
+                { color: 'red' },
+                { color: 'red' },
+                { color: 'red' },
+            ],
+            [
+                { color: 'red' },
+                { color: 'red' },
+                { color: 'red' },
+                { color: 'red' },
+                { color: 'red' },
+                { color: 'red' },
+                { color: 'red' },
+                { color: 'red' },
+                { color: 'red' },
+            ],
+            [
+                { color: 'red' },
+                { color: 'red' },
+                { color: 'red' },
+                { color: 'red' },
+                { color: 'red' },
+                { color: 'red' },
+                { color: 'red' },
+                { color: 'red' },
+                { color: 'red' },
+            ],
+            [
+                { color: 'red' },
+                { color: 'red' },
+                { color: 'red' },
+                { color: 'red' },
+                { color: 'red' },
+                { color: 'red' },
+                { color: 'red' },
+                { color: 'red' },
+                { color: 'red' },
+            ],
+        ],
+        points: 0,
+    },
+    computed: {
+        settingsConfig: function () {
+            return {
+                closeable: this.gameRunning,
+                title: this.gameRunning ? 'Reconfigure' : 'Create Game',
+                buttonText: 'Restart Game',
+            };
+        },
     },
     methods: {
         marbleStyle: function (marble) {
-            return marble ? ({
-                cursor: 'pointer',
-                background: marble.color,
-                border: `4px solid ${marble.highlight ? '' : 'transparent'}`
-            }) : ({background: 'transparent', border: '4px solid transparent'})
+            return marble
+                ? {
+                      cursor: 'pointer',
+                      background: marble.color,
+                      border: `4px solid ${
+                          marble.highlight ? '' : 'transparent'
+                      }`,
+                  }
+                : {
+                      background: 'transparent',
+                      border: '4px solid transparent',
+                  };
         },
-        settingsSubmit: function (e) {
-            this.websocket.send(JSON.stringify({
-                type: "reconfigure", payload: {...this.settings}
-            }))
-            e.preventDefault()
+        submitSettings: function (e) {
+            this.websocket.send(
+                JSON.stringify({
+                    type: 'reconfigure',
+                    payload: { ...this.settings },
+                })
+            );
+            e.preventDefault();
         },
 
-        onReceive: function ({type, payload}) {
+        onReceive: function ({ type, payload }) {
             switch (type) {
-                case "state":
-                    this.updateState(payload)
+                case 'newGame':
+                    this.gameRunning = true;
+                    this.settingsVisible = false;
+                case 'state':
+                    this.updateState(payload);
                     break;
-                case "hover":
-                    this.updateHover(payload.marbles)
+                case 'hover':
+                    this.updateHover(payload.marbles);
                     break;
-                case "settings":
-                    this.updateSettings(payload)
+                case 'settings':
+                    this.updateSettings(payload);
                     break;
-                case "gameOver":
-                    this.showGameOver(payload)
+                case 'gameOver':
+                    this.showGameOver(payload);
                     break;
             }
         },
         updateState: function (gameState) {
-            this.field = gameState.field
-                .map(col => col
-                    .map(marble => marble ? {...marble, highlight: false} : null))
-            this.points = gameState.points
-            this.gameRunning = true
+            this.field = gameState.field.map((col) =>
+                col.map((marble) =>
+                    marble ? { ...marble, highlight: false } : null
+                )
+            );
+            this.points = gameState.points;
+            this.gameRunning = true;
         },
         updateSettings: function (settings) {
-            this.settings.width = settings.width
-            this.settings.height = settings.height
-            this.settings.connectedMarbles = settings.connectedMarbles
-            this.settings.remainingMarbleDeduction = settings.remainingMarbleDeduction
+            this.settings.width = settings.width;
+            this.settings.height = settings.height;
+            this.settings.connectedMarbles = settings.connectedMarbles;
+            this.settings.remainingMarbleDeduction =
+                settings.remainingMarbleDeduction;
         },
         updateHover: function (marbles) {
-            marbles.forEach(coord => {
-                this.field[coord.column][coord.row].highlight = true
-            })
+            marbles.forEach((coord) => {
+                this.field[coord.column][coord.row].highlight = true;
+            });
         },
-        showGameOver: function (points) {
-
-        },
+        showGameOver: function (points) {},
         onHover: function (column, row) {
-            if (this.onHoverTimeout)
-                clearTimeout(this.onHoverTimeout)
-
-            this.onHoverTimeout = setTimeout(() => {
-                this.sendToSocket("hover", {column, row})
-            }, 500);
-
+            this.debounce('startHoverDebounce', () =>
+                this.sendToSocket('hover', { column, row })
+            );
         },
         endHover: function () {
-            if (this.onHoverOverTimeout) {
-                clearTimeout(this.onHoverOverTimeout)
-            }
-
-            this.onHoverOverTimeout = setTimeout(() => {
-                    this.field.forEach(column => column.forEach(marble => {
+            this.debounce('endHoverDebounce', () => {
+                this.field.forEach((column) =>
+                    column.forEach((marble) => {
                         if (marble) {
-                            marble.highlight = false
+                            marble.highlight = false;
                         }
-                    }))
-                }, 500
-            )
+                    })
+                );
+            });
         },
         marbleSelected: function (column, row) {
-            this.sendToSocket("move", {column, row})
+            this.sendToSocket('move', { column, row });
+        },
+        changeSettingsMidGame: function () {
+            this.settingsVisible = true;
+        },
+        settingsClose: function () {
+            this.settingsVisible = false;
+        },
+        debounce: function (debounceFuncId, func, timeout = 250) {
+            if (this[debounceFuncId]) {
+                clearTimeout(this[debounceFuncId]);
+            }
+            this[debounceFuncId] = setTimeout(func, timeout);
         },
         sendToSocket: function (type, payload) {
-            this.websocket.send(JSON.stringify({type, payload}))
-        }
+            this.websocket.send(JSON.stringify({ type, payload }));
+        },
     },
     created: function () {
-        let socket = new WebSocket(`ws://${window.location.host}/ws`)
+        let socket = new WebSocket(`ws://${window.location.host}/ws`);
         socket.onerror = function () {
-            console.log("ERROR")
-        }
+            console.log('ERROR');
+        };
 
         socket.onclose = (e) => {
-            console.log("CLOSED")
-        }
+            console.log('CLOSED');
+        };
 
         socket.onmessage = (e) => {
-            this.onReceive(JSON.parse(e.data))
-        }
+            this.onReceive(JSON.parse(e.data));
+        };
 
-        this.websocket = socket
-    }
-})
+        this.websocket = socket;
+    },
+});
