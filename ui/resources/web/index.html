@@ -15,7 +15,7 @@
                 <div class="marble"
                      @mouseenter="marble ? onHover(colIndex, rowIndex) : null"
                      @mouseleave="marble ? endHover() : null"
-                     @click="marble ? marbleSelected : null"
+                     @click="marble ? marbleSelected(colIndex, rowIndex) : null"
                      v-for="(marble, rowIndex) in col"
                      :style="marbleStyle(marble)"></div>
             </div>

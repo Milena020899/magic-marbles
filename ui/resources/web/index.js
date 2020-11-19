@@ -14,24 +14,16 @@ const app = new Vue({
     },
     methods: {
         marbleStyle: function (marble) {
-            console.log("STYLE CALL")
-            if (!marble) {
-                return {background: 'transparent', border: '4px solid transparent'}
-            } else {
-                return {
-                    cursor: 'pointer',
-                    background: marble.color,
-                    border: `4px solid ${marble.highlight ? '' : 'transparent'}`
-                }
-            }
+            return marble ? ({
+                cursor: 'pointer',
+                background: marble.color,
+                border: `4px solid ${marble.highlight ? '' : 'transparent'}`
+            }) : ({background: 'transparent', border: '4px solid transparent'})
         },
         settingsSubmit: function (e) {
-            let req = {
-                type: "reconfigure", payload: {
-                    ...this.settings
-                }
-            }
-            this.websocket.send(JSON.stringify(req))
+            this.websocket.send(JSON.stringify({
+                type: "reconfigure", payload: {...this.settings}
+            }))
             e.preventDefault()
         },
 

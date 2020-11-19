@@ -28,7 +28,7 @@ class MagicMarblesApplication {
 
     data class GameSession(val id: String)
 
-    val gameServer = GameServer(
+    private val gameServer = GameServer(
         GameFactoryImpl(
             SettingsValidatorImpl(
                 MapConfig(
@@ -73,12 +73,10 @@ class MagicMarblesApplication {
                 incoming.consumeEach { frame ->
                     try {
                         if (frame is Frame.Text) {
-                            print(frame.data)
-                            onReceived(session.id, Json.decodeFromString(frame.readText()))
+                            onReceived(session.id, Json.decodeFromString(frame.readText()), this)
                         }
                     } catch (ex: Exception) {
                     }
-
                 }
             }
 
@@ -89,7 +87,7 @@ class MagicMarblesApplication {
         }
     }
 
-    private suspend fun onReceived(id: String, message: MessageDto) {
+    private suspend fun onReceived(id: String, message: MessageDto, socket: WebSocketSession) {
         when (message.type) {
             "reconfigure" -> {
                 val settings = Json.decodeFromJsonElement<SettingsDto>(message.payload)
@@ -100,10 +98,11 @@ class MagicMarblesApplication {
             }
             "move" -> {
                 val coordinate = Json.decodeFromJsonElement<CoordinateDto>(message.payload)
+                gameServer.move(id, coordinate)
             }
             "hover" -> {
                 val coordinate = Json.decodeFromJsonElement<CoordinateDto>(message.payload)
-                gameServer.hover(id, coordinate)
+                gameServer.hover(socket, id, coordinate)
             }
         }
     }
