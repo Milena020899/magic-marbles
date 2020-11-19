@@ -7,7 +7,7 @@ Vue.component('modal', {
                     <div id="modal">
                         <div id="modal-header">
                             <h1 id="modal-title">{{title}}</h1>
-                            <div @click="closeModal"  v-if="closeable" id="modal-close">Close</div>
+                            <div @click="closeModal"  v-if="closeable" id="modal-close">X</div>
                         </div>
                        <slot></slot>
                     </div>

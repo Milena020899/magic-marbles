@@ -3,52 +3,35 @@
     <head>
         <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
         <title>Magic Marble</title>
-        <link rel="stylesheet" href="index.css" />
+        <link rel="stylesheet" href="css/index.css" />
+        <link rel="stylesheet" href="css/modal.css" />
+        <link rel="stylesheet" href="css/settings.css" />
     </head>
     <body>
-        <main id="app">
-            <h1 id="game-header">Magic Marbles</h1>
+        <div id="app">
             <settings
                 v-if="settingsVisible"
-                :initial-settings="storedSettings"
                 :title="settingsConfig.title"
                 :closeable="settingsConfig.closeable"
                 :button-text="settingsConfig.buttonText"
                 @close-settings="settingsClose"
             ></settings>
-            <div class="content-wrapper">
-                <div class="game-container">
-                    <div class="points">
-                        Points: {{gameRunning ? points : '-'}}
-                    </div>
-                    <button
-                        :disabled="!gameRunning"
-                        @click="changeSettingsMidGame"
-                        class="reconfigure"
-                    >
-                        Reconfigure
-                    </button>
-                    <button :disabled="!gameRunning" class="restart">
-                        Restart Game
-                    </button>
-                    <div class="game-field" v-if="gameRunning">
-                        <div class="column" v-for="(col, colIndex) in field">
-                            <div
-                                class="marble"
-                                @mouseenter="marble ? onHover(colIndex, rowIndex) : null"
-                                @mouseleave="marble ? endHover() : null"
-                                @click="marble ? marbleSelected(colIndex, rowIndex) : null"
-                                v-for="(marble, rowIndex) in col"
-                                :style="marbleStyle(marble)"
-                            ></div>
-                        </div>
-                    </div>
-                    <div class="no-game-message" v-else>No Running Game</div>
-                </div>
-            </div>
-        </main>
+            <main id="content">
+                <h1 id="game-header">Magic Marbles</h1>
+                <game-field
+                    :game-running="gameRunning"
+                    :settings-visible="settingsVisible"
+                    @reconfigure="reconfigure"
+                    @restart=""
+                    v-if="gameRunning"
+                ></game-field>
+                <div class="no-game-message" v-else>No Running Game</div>
+            </main>
+        </div>
+        <script type="text/javascript" src="websocketMixin.js"></script>
         <script type="text/javascript" src="modal.js"></script>
         <script type="text/javascript" src="settings.js"></script>
+        <script type="text/javascript" src="field.js"></script>
         <script type="text/javascript" src="index.js"></script>
     </body>
 </html>
