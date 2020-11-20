@@ -1,11 +1,6 @@
 Vue.component('game-field', {
-    data: function () {
-        return { field: [], points: 0 };
-    },
-    mixins: [websocketMixin],
-    props: ['gameRunning', 'settings-visible'],
     template: `
-        <div class="game-container" :style="blurStyle">
+        <div class="game-container" >
             <div class="points">
                 Points: {{gameRunning ? points : '-'}}
             </div>
@@ -32,12 +27,6 @@ Vue.component('game-field', {
                 </div>
             </div>
         </div>`,
-    computed: {
-        blurStyle: function () {
-            if (this.settingsVisible) return { filter: 'blur(1.0rem)' };
-            else return {};
-        },
-    },
     methods: {
         marbleStyle: function (marble) {
             return marble
@@ -98,9 +87,5 @@ Vue.component('game-field', {
             }
             this[debounceFuncId] = setTimeout(func, timeout);
         },
-    },
-    created: function () {
-        this.onMessage('hover', this.updateHover);
-        this.onMessage('state', this.updateState);
     },
 });

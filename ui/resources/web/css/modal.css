@@ -4,7 +4,7 @@
     position: fixed;
     top: 0;
     left: 0;
-    background: rgb(128, 128, 128, 0.7);
+    background: rgb(128, 128, 128, 0.9);
     display: flex;
     justify-content: center;
     align-items: center;
@@ -15,11 +15,11 @@
     width: fit-content;
     height: fit-content;
     background: black;
-    border-radius: 5px;
+    border-radius: var(--default-border-radius);
     border: 1px solid var(--primary-color);
     display: grid;
     grid-template-rows: auto 1fr;
-    padding: 10px;
+    padding: var(--default-padding);
     gap: 10px;
 }
 

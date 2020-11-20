@@ -15,7 +15,7 @@
     max-width: 250px;
     background: transparent;
     border: 1px solid white;
-    border-radius: 5px;
+    border-radius: var(--default-border-radius);
     height: 25px;
     color: white;
 }

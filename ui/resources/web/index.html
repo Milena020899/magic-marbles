@@ -9,13 +9,14 @@
     </head>
     <body>
         <div id="app">
-            <settings
-                v-if="settingsVisible"
+            <modal
                 :title="settingsConfig.title"
                 :closeable="settingsConfig.closeable"
-                :button-text="settingsConfig.buttonText"
-                @close-settings="settingsClose"
-            ></settings>
+                @close-modal="settingsClose"
+                v-if="settingsVisible"
+            >
+                <settings :button-text="settingsConfig.buttonText"></settings>
+            </modal>
             <main id="content">
                 <h1 id="game-header">Magic Marbles</h1>
                 <game-field
@@ -25,10 +26,15 @@
                     @restart=""
                     v-if="gameRunning"
                 ></game-field>
-                <div class="no-game-message" v-else>No Running Game</div>
+                <div class="game-settings-wrapper" v-else>
+                    <div class="no-game-settings">
+                        <h1 class="new-game-title">Start New Game</h1>
+                        <settings button-text="Create Game"></settings>
+                    </div>
+                </div>
             </main>
         </div>
-        <script type="text/javascript" src="websocketMixin.js"></script>
+        <script type="text/javascript" src="stateMixin.js"></script>
         <script type="text/javascript" src="modal.js"></script>
         <script type="text/javascript" src="settings.js"></script>
         <script type="text/javascript" src="field.js"></script>

@@ -1,10 +1,5 @@
 const app = new Vue({
     el: '#app',
-    mixins: [websocketMixin],
-    data: {
-        gameRunning: true,
-        settingsVisible: false,
-    },
     computed: {
         settingsConfig: function () {
             return {
@@ -12,6 +7,10 @@ const app = new Vue({
                 title: this.gameRunning ? 'Reconfigure' : 'Create Game',
                 buttonText: 'Restart Game',
             };
+        },
+        blurStyle: function () {
+            if (this.settingsVisible) return { filter: 'blur(0.5rem)' };
+            else return {};
         },
     },
     methods: {
@@ -27,5 +26,8 @@ const app = new Vue({
         settingsClose: function () {
             this.settingsVisible = false;
         },
+    },
+    created: function () {
+        this.initialize();
     },
 });
