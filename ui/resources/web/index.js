@@ -9,7 +9,8 @@ const app = new Vue({
             };
         },
         blurStyle: function () {
-            if (this.settingsVisible) return { filter: 'blur(0.5rem)' };
+            if (this.settingsVisible && this.gameRunning)
+                return { filter: 'blur(1.0rem)' };
             else return {};
         },
     },

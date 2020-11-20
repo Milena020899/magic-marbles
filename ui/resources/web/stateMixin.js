@@ -4,7 +4,7 @@ Vue.mixin({
             websocket: null,
             field: [],
             points: 0,
-            gameRunning: false,
+            gameRunning: true,
             settingsVisible: false,
             settings: {
                 width: 0,

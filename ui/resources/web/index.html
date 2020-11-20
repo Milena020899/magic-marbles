@@ -17,8 +17,10 @@
             >
                 <settings :button-text="settingsConfig.buttonText"></settings>
             </modal>
-            <main id="content">
-                <h1 id="game-header">Magic Marbles</h1>
+            <main id="content" :style="blurStyle">
+                <div class="game-header-wrapper">
+                    <h1 id="game-header">Magic Marbles</h1>
+                </div>
                 <game-field
                     :game-running="gameRunning"
                     :settings-visible="settingsVisible"
@@ -29,7 +31,7 @@
                 <div class="game-settings-wrapper" v-else>
                     <div class="no-game-settings">
                         <h1 class="new-game-title">Start New Game</h1>
-                        <settings button-text="Create Game"></settings>
+                        <settings button-text="Start Game"></settings>
                     </div>
                 </div>
             </main>
