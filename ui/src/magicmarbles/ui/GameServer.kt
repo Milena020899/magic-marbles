@@ -7,19 +7,31 @@ import kotlinx.serialization.json.encodeToJsonElement
 import magicmarbles.api.game.*
 import magicmarbles.impl.settings.ExtendedSettings
 import magicmarbles.impl.settings.ExtendedSettingsImpl
-import magicmarbles.ui.dto.*
+import magicmarbles.impl.settings.SettingsValidator
+import magicmarbles.ui.dto.ErrorDto
+import magicmarbles.ui.dto.MessageDto
+import magicmarbles.ui.dto.configuration.*
+import magicmarbles.ui.dto.game.CoordinateDto
+import magicmarbles.ui.dto.game.GameStateDto
+import magicmarbles.ui.dto.game.HoverResultDto
+import magicmarbles.ui.dto.game.MarbleDto
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.CopyOnWriteArrayList
 
-class GameServer(private val gameFactory: GameFactory<ExtendedSettings>) {
+class GameServer(
+    private val gameFactory: GameFactory<ExtendedSettings>,
+    private val settingsValidator: SettingsValidator
+) {
 
     enum class MessageType(val typename: String) {
-        Hover("hover"),
-        State("state"),
-        Move("move"),
-        InvalidMove("invalidMove"),
-        GameOver("gameOver"),
-        GameAlreadyOver("gameAlreadyOver")
+        StateSync("stateSync"), //on initial request to push either running game or initial config
+        Hover("hover"), //push hover result to requesting socket
+        StateUpdate("stateUpdate"), //pushes new game state
+        GameStart("start"), //pushes start of a game
+        InvalidMove("invalidMove"), //pushes invalid move
+        SettingsResult("settingsResult"), //pushes result of a configuration
+        GameOver("gameOver"), //pushes game over
+        GameAlreadyOver("gameAlreadyOver") //pushes when game is already over
     }
 
     private val defaultSettings = ExtendedSettingsImpl(5, 5, 3, { it * 2 }, 50)
@@ -31,56 +43,53 @@ class GameServer(private val gameFactory: GameFactory<ExtendedSettings>) {
         val list = activeConnections.computeIfAbsent(id) { CopyOnWriteArrayList() }
         list.add(socket)
 
-        if (list.size == 1) {
-            socket.send(
-                Json.encodeToString(
-                    MessageDto(
-                        "settings", Json.encodeToJsonElement(
-                            SettingsDto(
-                                defaultSettings.width,
-                                defaultSettings.height,
-                                defaultSettings.minConnectedMarbles,
-                                defaultSettings.remainingMarbleReduction
-                            )
-                        )
-                    )
-                )
-            )
-        } else {
-            val game = activeGames[id] ?: return
-            socket.send(messageJsonStringOf(MessageType.State, game.toDto()))
+        val game = activeGames[id]
+
+        val message = if (game == null) messageOf(
+            MessageType.StateSync,
+            NoGameSync(defaultSettings.toDto()),
+            Json { classDiscriminator = "syncType" })
+        else messageOf(MessageType.StateSync, ExistingGameSync(game.toDto()), Json { encodeDefaults = true })
+
+        pushToSocket(message, socket)
+    }
+
+    suspend fun startWithConfiguration(websocket: WebSocketSession, id: String, settingsDto: SettingsDto) {
+        val validationResult = settingsValidator.validateSettings(settingsDto.toSettings())
+
+        pushToSocket(
+            messageOf(
+                MessageType.SettingsResult,
+                if (validationResult.isEmpty()) ConfigurationSuccess else ConfigurationError(validationResult),
+                Json { classDiscriminator = "settingsResult" }),
+            websocket
+        )
+
+        if (validationResult.isEmpty()) {
+            val game = activeGames.computeIfAbsent(id) { gameFactory.createGame(settingsDto.toSettings())!! }
+            pushGameStart(id, game)
         }
     }
 
-    suspend fun configureAndStart(id: String, settings: SettingsDto) {
-        val userSettings = ExtendedSettingsImpl(
-            settings.width,
-            settings.height,
-            settings.connectedMarbles,
-            defaultSettings.pointCalculation,
-            settings.remainingMarbleDeduction
-        )
-        val game = activeGames.computeIfAbsent(id) { gameFactory.createGame(userSettings)!! }
-        sendAllPlayerConnections(id, messageJsonStringOf(MessageType.State, game.toDto()))
+    private suspend fun pushGameStart(id: String, game: Game) {
+        pushToAllPlayerConnections(id, messageOf(MessageType.GameStart, GameStartDto))
+        pushToAllPlayerConnections(id, game.toMessage())
     }
 
     suspend fun restartGame(id: String) {
         val game = activeGames[id] ?: return
         game.restart()
+        pushGameStart(id, game)
     }
 
-    suspend fun move(id: String, coordinate: CoordinateDto) {
+    suspend fun move(socket: WebSocketSession, id: String, coordinate: CoordinateDto) {
         val game = activeGames[id] ?: return
         when (game.move(coordinate.column, coordinate.row)) {
-            is ValidMove -> sendAllPlayerConnections(id, messageJsonStringOf(MessageType.State, game.toDto()))
-            is GameOver -> sendAllPlayerConnections(
-                id,
-                messageJsonStringOf(MessageType.GameOver, game.toDto())
-            )
-            is InvalidMove -> sendAllPlayerConnections(id, messageJsonStringOf(MessageType.InvalidMove, coordinate))
-            is GameAlreadyOver -> sendAllPlayerConnections(
-                id,
-                messageJsonStringOf(MessageType.GameAlreadyOver, ErrorDto("Game is already over"))
+            is ValidMove -> pushToAllPlayerConnections(id, game.toMessage())
+            is GameOver -> pushToAllPlayerConnections(id, game.toMessage(MessageType.GameOver))
+            is InvalidMove -> pushToSocket(messageOf(MessageType.InvalidMove, coordinate), socket)
+            is GameAlreadyOver -> pushToSocket(
+                messageOf(MessageType.GameAlreadyOver, ErrorDto("Game is already over")), socket
             )
         }
     }
@@ -90,25 +99,49 @@ class GameServer(private val gameFactory: GameFactory<ExtendedSettings>) {
         val connectedMarbles = game.field
             .getConnectedMarbles(coordinate.column, coordinate.row)
             ?.map { CoordinateDto(it.first, it.second) } ?: return
-        socket.send(messageJsonStringOf(MessageType.Hover, HoverResultDto(connectedMarbles)))
+        pushToSocket(messageOf(MessageType.Hover, HoverResultDto(connectedMarbles)), socket)
     }
 
-    private inline fun <reified T> messageJsonStringOf(type: MessageType, payload: T): String =
-        Json.encodeToString(MessageDto(type.typename, Json { encodeDefaults = true }.encodeToJsonElement(payload)))
+    private fun Game.toMessage(messageType: MessageType = MessageType.StateUpdate): MessageDto =
+        messageOf(messageType, this.toDto(), Json { encodeDefaults = true })
+
+    private inline fun <reified T> messageOf(
+        type: MessageType,
+        payload: T,
+        serializer: Json = Json
+    ): MessageDto =
+        MessageDto(type.typename, serializer.encodeToJsonElement(payload))
+
+    // TODO remove impl in favor of factory
+    // TODO unifying naming
+    private fun SettingsDto.toSettings(): ExtendedSettings = ExtendedSettingsImpl(
+        width,
+        height,
+        connectedMarbles,
+        defaultSettings.pointCalculation,
+        remainingMarbleDeduction
+    )
+
+    private fun ExtendedSettings.toDto(): SettingsDto =
+        SettingsDto(width, height, minConnectedMarbles, remainingMarbleReduction)
 
     private fun Game.toDto(): GameStateDto {
         val colorList = this.field.field
             .map { column ->
                 column.map { it?.color?.hex?.let { color -> MarbleDto(color) } }
             }
-
         return GameStateDto(colorList, this.points)
     }
 
-    private suspend fun sendAllPlayerConnections(id: String, message: String) {
-        val connections = activeConnections[id] ?: return
-        connections.forEach {
-            it.send(message)
+    private suspend fun pushToSocket(messageDto: MessageDto, vararg websockets: WebSocketSession) {
+        val messageString = Json.encodeToString(messageDto)
+        websockets.forEach {
+            it.send(messageString)
         }
+    }
+
+    private suspend fun pushToAllPlayerConnections(id: String, messageDto: MessageDto) {
+        val connections = activeConnections[id] ?: return
+        pushToSocket(messageDto, *connections.toTypedArray())
     }
 }

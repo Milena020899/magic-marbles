@@ -1,4 +1,4 @@
-package magicmarbles.ui.dto
+package magicmarbles.ui.dto.game
 
 import kotlinx.serialization.Serializable
 

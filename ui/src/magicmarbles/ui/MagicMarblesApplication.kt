@@ -17,9 +17,9 @@ import magicmarbles.impl.field.FieldImpl
 import magicmarbles.impl.game.GameFactoryImpl
 import magicmarbles.impl.settings.SettingsValidatorImpl
 import magicmarbles.impl.util.TestFieldBuilder
-import magicmarbles.ui.dto.CoordinateDto
 import magicmarbles.ui.dto.MessageDto
-import magicmarbles.ui.dto.SettingsDto
+import magicmarbles.ui.dto.configuration.SettingsDto
+import magicmarbles.ui.dto.game.CoordinateDto
 import java.time.Duration
 
 fun main(args: Array<String>): Unit = io.ktor.server.netty.EngineMain.main(args)
@@ -28,19 +28,23 @@ class MagicMarblesApplication {
 
     data class GameSession(val id: String)
 
+
+    private val settingsValidator = SettingsValidatorImpl(
+        MapConfig(
+            mapOf(
+                "minFieldSize" to Pair(3, 3),
+                "remainingMarbleReduction" to Pair(0, 100),
+                "minimumConnectedMarbles" to Pair(3, 5)
+            )
+        )
+    )
+
     private val gameServer = GameServer(
         GameFactoryImpl(
-            SettingsValidatorImpl(
-                MapConfig(
-                    mapOf(
-                        "minFieldSize" to Pair(3, 3),
-                        "remainingMarbleReduction" to Pair(0, 100),
-                        "minimumConnectedMarbles" to Pair(3, 5)
-                    )
-                )
-            ),
+            settingsValidator,
             TestFieldBuilder(FieldImpl.Factory)
-        )
+        ),
+        settingsValidator
     )
 
     @ExperimentalCoroutinesApi
@@ -89,16 +93,14 @@ class MagicMarblesApplication {
 
     private suspend fun onReceived(id: String, message: MessageDto, socket: WebSocketSession) {
         when (message.type) {
-            "reconfigure" -> {
+            "startWithConfiguration" -> {
                 val settings = Json.decodeFromJsonElement<SettingsDto>(message.payload)
-                gameServer.configureAndStart(id, settings)
+                gameServer.startWithConfiguration(socket, id, settings)
             }
-            "startGame" -> {
-
-            }
+            "restart" -> gameServer.restartGame(id)
             "move" -> {
                 val coordinate = Json.decodeFromJsonElement<CoordinateDto>(message.payload)
-                gameServer.move(id, coordinate)
+                gameServer.move(socket, id, coordinate)
             }
             "hover" -> {
                 val coordinate = Json.decodeFromJsonElement<CoordinateDto>(message.payload)
@@ -106,31 +108,5 @@ class MagicMarblesApplication {
             }
         }
     }
-//            get("/") {
-//                call.respondText("HELLO WORLD!", contentType = ContentType.Text.Plain)
-//            }
-//
-//            // Static feature. Try to access `/static/ktor_logo.svg`
-//            static("/web") {
-//                resources("web")
-//            }
-//
-//            get("/session/increment") {
-//                val session = call.sessions.get<GameSession>() ?: GameSession()
-//                call.sessions.set(session.copy(count = session.count + 1))
-//                call.respondText("Counter is ${session.count}. Refresh to increment.")
-//            }
-//
-//            webSocket("/myws/echo") {
-//                send(Frame.Text("Hi from server"))
-//                while (true) {
-//                    val frame = incoming.receive()
-//                    if (frame is Frame.Text) {
-//                        send(Frame.Text("Client said: " + frame.readText()))
-//                    }
-//                }
-//            }
-
-
 }
 
