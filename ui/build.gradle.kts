@@ -15,6 +15,12 @@ application {
     mainClassName = "io.ktor.server.netty.EngineMain"
 }
 
+tasks {
+    withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
+        kotlinOptions.jvmTarget = "1.8"
+    }
+}
+
 repositories {
     mavenLocal()
     jcenter()
@@ -24,6 +30,7 @@ repositories {
 }
 
 dependencies {
+    implementation("io.ktor:ktor-serialization:$ktor_version")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.0.1")
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version")
     implementation("io.ktor:ktor-server-netty:$ktor_version")
@@ -35,6 +42,7 @@ dependencies {
     testImplementation("io.ktor:ktor-server-tests:$ktor_version")
     implementation(project(":core-impl"))
     implementation(project(":core"))
+    implementation("com.michael-bull.kotlin-result:kotlin-result:1.1.9")
 }
 
 kotlin.sourceSets["main"].kotlin.srcDirs("src")

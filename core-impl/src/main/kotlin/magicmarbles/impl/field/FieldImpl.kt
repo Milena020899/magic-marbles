@@ -1,39 +1,43 @@
 package magicmarbles.impl.field
 
+import com.github.michaelbull.result.*
 import magicmarbles.api.field.*
 
 class FieldImpl private constructor(
     override val field: MutableList<MutableList<Marble?>>,
     override val width: Int,
     override val height: Int,
-    val minConnected: Int
+    private val minConnected: Int
 ) : Field, ModifiableField, PlayableField {
 
-    override fun move(column: Int, row: Int): Int? {
-        if (!checkBounds(column, row)) return null
-        val marblesToRemove = getConnectedMarbles(column, row)
-        if (marblesToRemove == null || marblesToRemove.size < minConnected) return null
+    override fun move(column: Int, row: Int): Result<Int, FieldException> {
+        if (!checkBounds(column, row)) return Err(InvalidCoordinateException(column, row))
+        return getConnectedMarbles(column, row)
+            .onSuccess { marblesToRemove ->
+                if (marblesToRemove.isEmpty())
+                    return Err(NotEnoughConnectedMarblesException())
 
-        marblesToRemove.forEach { (_r, _c) -> this[_r, _c] = null }
+                marblesToRemove.forEach { (_r, _c) -> this[_r, _c] = null }
 
-        field.forEach { it.removeAndAppendFront({ marble -> marble == null }, { null }) }
-        field.removeAndAppendFront({ it.all { marble -> marble == null } }, { MutableList(height) { null } })
-        return marblesToRemove.size
+                field.forEach { it.removeAndAppendFront({ marble -> marble == null }, { null }) }
+                field.removeAndAppendFront({ it.all { marble -> marble == null } }, { MutableList(height) { null } })
+            }.map { it.size }
     }
 
     override fun movesPossible(): Boolean {
         field.indices.forEach { column ->
             field[column].indices.forEach { row ->
-                getConnectedMarbles(column, row)?.size?.let {
-                    if (it >= minConnected) return true
-                }
+                if (getConnectedMarbles(column, row) is Ok) return true
             }
         }
 
         return false
     }
 
-    override fun getConnectedMarbles(column: Int, row: Int): List<Pair<Int, Int>>? {
+    override fun getConnectedMarbles(
+        column: Int,
+        row: Int
+    ): Result<List<Pair<Int, Int>>, FieldException> {
         fun getConnectedMarblesInternal(
             color: Color,
             _column: Int,
@@ -54,12 +58,12 @@ class FieldImpl private constructor(
         }
 
         val marble = this[column, row]
-        return if (marble == null) null
+        return if (marble == null) Err(InvalidCoordinateException(column, row))
         else {
             val list = mutableListOf<Pair<Int, Int>>()
             getConnectedMarblesInternal(marble.color, column, row, list)
-            if (list.size < minConnected) null
-            else list
+            if (list.size < minConnected) Err(NotEnoughConnectedMarblesException())
+            else Ok(list)
         }
     }
 

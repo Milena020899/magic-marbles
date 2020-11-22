@@ -1,16 +1,12 @@
 package magicmarbles.api.game
 
+import com.github.michaelbull.result.Result
 import magicmarbles.api.field.Field
 
 interface Game {
     val field: Field
     val points: Int
-    fun move(column: Int, row: Int): MoveResult
+    val over: Boolean
+    fun move(column: Int, row: Int): Result<Unit, GameException>
     fun restart()
 }
-
-interface MoveResult
-interface ValidMove : MoveResult
-interface GameOver : MoveResult
-interface InvalidMove : MoveResult
-interface GameAlreadyOver : InvalidMove

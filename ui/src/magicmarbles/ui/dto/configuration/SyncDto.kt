@@ -8,7 +8,9 @@ import magicmarbles.ui.dto.game.GameStateDto
 sealed class SyncDto
 
 @SerialName("noGame")
+@Serializable
 data class NoGameSync(val settingsDto: SettingsDto) : SyncDto()
 
 @SerialName("existingGame")
+@Serializable
 data class ExistingGameSync(val gameState: GameStateDto) : SyncDto()

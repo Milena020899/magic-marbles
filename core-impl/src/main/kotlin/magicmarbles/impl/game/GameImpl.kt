@@ -1,27 +1,34 @@
 package magicmarbles.impl.game
 
+import com.github.michaelbull.result.Err
+import com.github.michaelbull.result.Result
+import com.github.michaelbull.result.mapEither
+import com.github.michaelbull.result.onSuccess
 import magicmarbles.api.field.PlayableField
-import magicmarbles.api.game.*
+import magicmarbles.api.game.Game
+import magicmarbles.api.game.GameAlreadyOverException
+import magicmarbles.api.game.GameException
+import magicmarbles.api.game.InvalidMoveException
 import magicmarbles.impl.settings.ExtendedSettings
 
 class GameImpl(
-    private val fieldProvider: () -> PlayableField,
+    val fieldProvider: () -> PlayableField,
     private val settings: ExtendedSettings
 ) : Game {
     override var field = fieldProvider()
     override var points: Int = 0
-    private var over: Boolean = false
+    override var over: Boolean = false
 
-    override fun move(column: Int, row: Int): MoveResult {
-        if (over) return GameAlreadyOverImpl
-        val removedMarbles = field.move(column, row) ?: return InvalidMoveImpl
-        points += settings.pointCalculation(removedMarbles)
+    override fun move(column: Int, row: Int): Result<Unit, GameException> {
+        if (over) return Err(GameAlreadyOverException())
 
-        return if (!field.movesPossible()) {
-            over = true
-            points -= settings.remainingMarbleReduction * field.marbleCount()
-            GameOverImpl
-        } else ValidMoveImpl
+        return field.move(column, row)
+            .onSuccess {
+                points += settings.pointCalculation(it)
+                if (!field.movesPossible()) {
+                    over = true
+                }
+            }.mapEither({ Unit }, { InvalidMoveException(it) })
     }
 
     override fun restart() {
@@ -30,8 +37,3 @@ class GameImpl(
         over = false
     }
 }
-
-object ValidMoveImpl : ValidMove
-object InvalidMoveImpl : InvalidMove
-object GameOverImpl : GameOver
-object GameAlreadyOverImpl : GameAlreadyOver
