@@ -1,6 +1,7 @@
-package magicmarbles.impl.settings
+package magicmarbles.impl.settings.validator
 
 import magicmarbles.impl.Configuration
+import magicmarbles.impl.settings.ExtendedSettings
 
 class SettingsValidatorImpl(configuration: Configuration) : SettingsValidator {
 

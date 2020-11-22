@@ -6,7 +6,7 @@ import magicmarbles.api.game.Game
 import magicmarbles.api.game.GameFactory
 import magicmarbles.api.settings.SettingsException
 import magicmarbles.impl.settings.ExtendedSettings
-import magicmarbles.impl.settings.SettingsValidator
+import magicmarbles.impl.settings.validator.SettingsValidator
 
 class GameFactoryImpl(
     private val settingsValidator: SettingsValidator,

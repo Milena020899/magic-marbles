@@ -18,5 +18,4 @@ interface Field {
     fun getConnectedMarbles(column: Int, row: Int): Result<List<Pair<Int, Int>>, FieldException>
 
     operator fun get(column: Int, row: Int): Marble? = field.getOrNull(column)?.getOrNull(row)
-
 }

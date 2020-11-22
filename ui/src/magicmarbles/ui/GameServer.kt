@@ -3,7 +3,6 @@ package magicmarbles.ui
 import com.github.michaelbull.result.*
 import magicmarbles.api.game.Game
 import magicmarbles.api.game.GameFactory
-import magicmarbles.api.game.InvalidHoverException
 import magicmarbles.api.settings.SettingsException
 import magicmarbles.impl.settings.ExtendedSettings
 import magicmarbles.impl.settings.ExtendedSettingsImpl
@@ -35,14 +34,14 @@ class GameServer(
         return Ok(game.toDto())
     }
 
-    fun move(id: String, coordinate: CoordinateDto): Result<GameStateDto, MarbleException> {
+    fun move(id: String, coordinate: CoordinateDto): Result<GameStateDto, MarbleGameException> {
         val game = activeGames[id] ?: return Err(NoGameException())
         return game.move(coordinate.column, coordinate.row)
             .mapEither({ game.toDto() }, { WrappedGameException(it) })
     }
 
     //
-    fun hover(id: String, coordinate: CoordinateDto): Result<HoverResultDto, MarbleException> {
+    fun hover(id: String, coordinate: CoordinateDto): Result<HoverResultDto, MarbleGameException> {
         val game = activeGames[id] ?: return Err(NoGameException())
         return game.field
             .getConnectedMarbles(coordinate.column, coordinate.row)
