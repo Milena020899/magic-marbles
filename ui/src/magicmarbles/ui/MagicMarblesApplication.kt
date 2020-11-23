@@ -45,8 +45,10 @@ class MagicMarblesApplication {
     @KtorExperimentalAPI
     fun Application.main() {
         install(ContentNegotiation) {
-            json(contentType = ContentType.Application.Json)
+            json(Json { encodeDefaults = true }, ContentType.Application.Json)
         }
+
+        install(DefaultHeaders)
 
         install(WebSockets) {
             pingPeriod = Duration.ofSeconds(15)

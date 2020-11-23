@@ -5,7 +5,6 @@ import magicmarbles.api.game.Game
 import magicmarbles.api.game.GameFactory
 import magicmarbles.api.impl.settings.ExtendedSettings
 import magicmarbles.api.impl.settings.ExtendedSettingsImpl
-import magicmarbles.api.settings.SettingsException
 import magicmarbles.ui.dto.game.CoordinateDto
 import magicmarbles.ui.dto.game.GameStateDto
 import magicmarbles.ui.dto.game.HoverResultDto
@@ -23,10 +22,10 @@ class GameServer(
     fun startWithConfiguration(
         id: String,
         settingsDto: SettingsDto
-    ): Result<GameStateDto, SettingsException> =
+    ): Result<GameStateDto, MarbleGameException> =
         gameFactory.createGame(settingsDto.toSettings())
             .onSuccess { activeGames[id] = it }
-            .map { it.toDto() }
+            .mapEither({ it.toDto() }, { WrappedSettingsException(it) })
 
     fun restartGame(id: String): Result<GameStateDto, NoGameException> {
         val game = activeGames[id] ?: return Err(NoGameException())
