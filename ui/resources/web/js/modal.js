@@ -1,6 +1,7 @@
 Vue.component('modal', {
+    store,
     data: function () {
-        return { visible: true };
+        return {visible: true};
     },
     props: ['title', 'closeable'],
     template: `<div v-if="visible" class="modal-wrapper">
@@ -14,7 +15,7 @@ Vue.component('modal', {
                 </div>`,
     methods: {
         closeModal: function () {
-            this.$emit('close-modal');
+            this.$store.commit('hideModal');
         },
     },
 });

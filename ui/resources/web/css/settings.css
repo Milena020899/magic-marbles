@@ -9,6 +9,9 @@
     display: flex;
     gap: 5px;
     flex-direction: column;
+    margin-left: auto;
+    margin-right: auto;
+    width: 250px;
 }
 
 .settings-input {
@@ -23,7 +26,16 @@
 #configure {
     grid-column: 1 / 3;
     width: 150px;
-    margin: auto;
     height: 50px;
-    margin-top: 10px;
+    margin: 10px auto auto;
+}
+
+#form-errors {
+    display: flex;
+    gap: 2px;
+    flex-direction: column;
+}
+
+.settings-error {
+    color: red;
 }
