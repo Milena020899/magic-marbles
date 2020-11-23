@@ -1,12 +1,12 @@
-package magicmarbles.impl.game
+package magicmarbles.api.impl.game
 
 import com.github.michaelbull.result.*
 import magicmarbles.api.field.FieldBuilder
 import magicmarbles.api.game.Game
 import magicmarbles.api.game.GameFactory
+import magicmarbles.api.impl.settings.ExtendedSettings
+import magicmarbles.api.impl.settings.validator.SettingsValidator
 import magicmarbles.api.settings.SettingsException
-import magicmarbles.impl.settings.ExtendedSettings
-import magicmarbles.impl.settings.validator.SettingsValidator
 
 class GameFactoryImpl(
     private val settingsValidator: SettingsValidator,

@@ -43,6 +43,7 @@ dependencies {
     implementation(project(":core-impl"))
     implementation(project(":core"))
     implementation("com.michael-bull.kotlin-result:kotlin-result:1.1.9")
+    implementation("org.kodein.di:kodein-di:7.1.0")
 }
 
 kotlin.sourceSets["main"].kotlin.srcDirs("src")

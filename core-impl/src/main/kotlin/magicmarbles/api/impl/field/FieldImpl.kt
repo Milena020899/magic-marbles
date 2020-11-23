@@ -1,4 +1,4 @@
-package magicmarbles.impl.field
+package magicmarbles.api.impl.field
 
 import com.github.michaelbull.result.*
 import magicmarbles.api.field.*

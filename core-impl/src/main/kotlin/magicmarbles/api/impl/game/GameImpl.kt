@@ -1,4 +1,4 @@
-package magicmarbles.impl.game
+package magicmarbles.api.impl.game
 
 import com.github.michaelbull.result.Err
 import com.github.michaelbull.result.Result
@@ -9,7 +9,7 @@ import magicmarbles.api.game.Game
 import magicmarbles.api.game.GameAlreadyOverException
 import magicmarbles.api.game.GameException
 import magicmarbles.api.game.InvalidMoveException
-import magicmarbles.impl.settings.ExtendedSettings
+import magicmarbles.api.impl.settings.ExtendedSettings
 
 class GameImpl(
     val fieldProvider: () -> PlayableField,

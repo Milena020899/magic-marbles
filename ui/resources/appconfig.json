@@ -1,0 +1,22 @@
+{
+  "settingsBounds": {
+    "minFieldSize": {
+      "lowerLimit": 3,
+      "upperLimit": 3
+    },
+    "remainingMarblePenalty": {
+      "lowerLimit": 0,
+      "upperLimit": 100
+    },
+    "minimumConnectedMarbles": {
+      "lowerLimit": 3,
+      "upperLimit": 100
+    }
+  },
+  "defaultSettings": {
+    "width": 3,
+    "height": 3,
+    "remainingMarblePenalty": 50,
+    "minimumConnectedMarbles": 3
+  }
+}

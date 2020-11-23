@@ -1,12 +1,12 @@
-package magicmarbles.impl.field
+package magicmarbles.api.impl.field
 
 import com.github.michaelbull.result.Err
 import com.github.michaelbull.result.Ok
 import com.github.michaelbull.result.Result
 import com.github.michaelbull.result.map
 import magicmarbles.api.field.*
+import magicmarbles.api.impl.settings.ExtendedSettings
 import magicmarbles.api.settings.SettingsException
-import magicmarbles.impl.settings.ExtendedSettings
 
 class RandomFieldBuilder(private val fieldFactory: ModifiableFieldFactory) : FieldBuilder<ExtendedSettings> {
     override fun build(settings: ExtendedSettings): Result<PlayableField, SettingsException> =

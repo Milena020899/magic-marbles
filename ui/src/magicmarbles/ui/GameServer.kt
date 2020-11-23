@@ -3,20 +3,20 @@ package magicmarbles.ui
 import com.github.michaelbull.result.*
 import magicmarbles.api.game.Game
 import magicmarbles.api.game.GameFactory
+import magicmarbles.api.impl.settings.ExtendedSettings
+import magicmarbles.api.impl.settings.ExtendedSettingsImpl
 import magicmarbles.api.settings.SettingsException
-import magicmarbles.impl.settings.ExtendedSettings
-import magicmarbles.impl.settings.ExtendedSettingsImpl
-import magicmarbles.ui.dto.configuration.SettingsDto
 import magicmarbles.ui.dto.game.CoordinateDto
 import magicmarbles.ui.dto.game.GameStateDto
 import magicmarbles.ui.dto.game.HoverResultDto
 import magicmarbles.ui.dto.game.MarbleDto
+import magicmarbles.ui.dto.settings.SettingsDto
 import java.util.concurrent.ConcurrentHashMap
 
 class GameServer(
     private val gameFactory: GameFactory<ExtendedSettings>,
+    private val defaultSettings: ExtendedSettings
 ) {
-    private val defaultSettings = ExtendedSettingsImpl(5, 5, 3, { it * 2 }, 50)
     private val activeGames = ConcurrentHashMap<String, Game>()
     private val storedSettings = ConcurrentHashMap<String, ExtendedSettings>() //TODO integrate
 
@@ -57,9 +57,9 @@ class GameServer(
     private fun SettingsDto.toSettings(): ExtendedSettings = ExtendedSettingsImpl(
         width,
         height,
-        connectedMarbles,
+        minimumConnectedMarbles,
         defaultSettings.pointCalculation,
-        remainingMarbleDeduction
+        remainingMarblePenalty
     )
 
     private fun Game.toDto(): GameStateDto {

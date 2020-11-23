@@ -1,6 +1,5 @@
 package magicmarbles.ui
 
-import com.github.michaelbull.result.onFailure
 import com.github.michaelbull.result.onSuccess
 import io.ktor.application.*
 import io.ktor.features.*
@@ -16,50 +15,35 @@ import io.ktor.util.*
 import io.ktor.util.pipeline.*
 import io.ktor.websocket.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import magicmarbles.api.field.FieldException
-import magicmarbles.api.field.InvalidCoordinateException
-import magicmarbles.api.field.NotEnoughConnectedMarblesException
-import magicmarbles.api.game.GameAlreadyOverException
-import magicmarbles.api.game.GameException
-import magicmarbles.api.game.InvalidMoveException
-import magicmarbles.api.settings.SettingsException
-import magicmarbles.impl.MapConfig
-import magicmarbles.impl.field.FieldImpl
-import magicmarbles.impl.game.GameFactoryImpl
-import magicmarbles.impl.settings.validator.SettingsValidatorImpl
-import magicmarbles.impl.util.TestFieldBuilder
-import magicmarbles.ui.dto.configuration.SettingsDto
-import magicmarbles.ui.dto.configuration.SettingsErrorDto
+import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.json.Json
+import magicmarbles.ui.configuration.ApplicationConfig
 import magicmarbles.ui.dto.game.CoordinateDto
+import magicmarbles.ui.dto.settings.SettingsDto
+import magicmarbles.ui.util.throwOnFailure
+import org.kodein.di.DI
+import org.kodein.di.instance
 import java.time.Duration
 
 fun main(args: Array<String>): Unit = io.ktor.server.netty.EngineMain.main(args)
 
 class MagicMarblesApplication {
 
+    private val appConfig: ApplicationConfig =
+        this::class.java.classLoader.getResource("appconfig.json")?.readText()?.let {
+            Json.decodeFromString<ApplicationConfig>(it)
+        } ?: throw IllegalArgumentException("Invalid Configuration")
+
     data class GameSession(val id: String)
 
-    private val settingsValidator = SettingsValidatorImpl(
-        MapConfig(
-            mapOf(
-                "minFieldSize" to Pair(3, 3),
-                "remainingMarbleReduction" to Pair(0, 100),
-                "minimumConnectedMarbles" to Pair(3, 5)
-            )
-        )
-    )
+    private val di: DI = buildDIContainer(appConfig)
 
-    private val gameServer = GameServer(
-        GameFactoryImpl(
-            settingsValidator,
-            TestFieldBuilder(FieldImpl.Factory)
-        )
-    )
+
+    private val gameServer by di.instance<GameServer>()
 
     @ExperimentalCoroutinesApi
     @KtorExperimentalAPI
     fun Application.main() {
-
         install(ContentNegotiation) {
             json(contentType = ContentType.Application.Json)
         }
@@ -78,13 +62,21 @@ class MagicMarblesApplication {
             }
         }
 
+        intercept(ApplicationCallPipeline.Call) {
+            try {
+                this.proceed()
+            } catch (ex: Exception) {
+                exceptionHandler(call, ex)
+            }
+        }
+
         routing {
             post("/startWithConfiguration") {
                 withSession { sessionId ->
                     val settings = call.receive<SettingsDto>()
                     gameServer.startWithConfiguration(sessionId, settings)
                         .onSuccess { call.respond(it) }
-                        .onFailure { exceptionHandler(call, it) }
+                        .throwOnFailure()
                 }
             }
 
@@ -92,7 +84,7 @@ class MagicMarblesApplication {
                 withSession { sessionId ->
                     gameServer.restartGame(sessionId)
                         .onSuccess { call.respond(it) }
-                        .onFailure { exceptionHandler(call, it) }
+                        .throwOnFailure()
                 }
             }
 
@@ -101,7 +93,7 @@ class MagicMarblesApplication {
                     val coordinates = call.receive<CoordinateDto>()
                     gameServer.move(sessionId, coordinates)
                         .onSuccess { call.respond(it) }
-                        .onFailure { exceptionHandler(call, it) }
+                        .throwOnFailure()
                 }
             }
 
@@ -110,7 +102,7 @@ class MagicMarblesApplication {
                     val coordinates = call.receive<CoordinateDto>()
                     gameServer.hover(sessionId, coordinates)
                         .onSuccess { call.respond(it) }
-                        .onFailure { exceptionHandler(call, it) }
+                        .throwOnFailure()
                 }
             }
 
@@ -119,49 +111,6 @@ class MagicMarblesApplication {
                 resources("web")
             }
         }
-    }
-
-    private suspend fun exceptionHandler(call: ApplicationCall, ex: Exception) =
-        if (ex is MarbleGameException) handleMarbleExceptions(call, ex)
-        else defaultExceptionHandler(call)
-
-    private suspend fun handleMarbleExceptions(call: ApplicationCall, ex: MarbleGameException) {
-        when (ex) {
-            is NoGameException -> call.respond(HttpStatusCode.NotFound, "No game found")
-            is WrappedGameException -> handleGameException(call, ex.gameException)
-            is WrappedFieldException -> handleFieldException(call, ex.fieldException)
-            is WrappedSettingsException -> handleSettingsException(call, ex.settingsException)
-        }
-    }
-
-    private suspend fun handleGameException(call: ApplicationCall, ex: GameException) {
-        when (ex) {
-            is GameAlreadyOverException -> call.respond(
-                HttpStatusCode.BadRequest,
-                "game is already over"
-            )
-            is InvalidMoveException -> handleFieldException(call, ex.fieldException)
-        }
-    }
-
-    private suspend fun handleFieldException(call: ApplicationCall, ex: FieldException) {
-        when (ex) {
-            is InvalidCoordinateException -> call.respond(
-                HttpStatusCode.BadRequest,
-                "Invalid coordinates (${ex.column}, ${ex.row})"
-            )
-            is NotEnoughConnectedMarblesException -> call.respond(
-                HttpStatusCode.BadRequest,
-                "Not enough connected marbles"
-            )
-        }
-    }
-
-    private suspend fun handleSettingsException(call: ApplicationCall, ex: SettingsException) =
-        call.respond(HttpStatusCode.BadRequest, SettingsErrorDto(ex.errors))
-
-    private suspend fun defaultExceptionHandler(call: ApplicationCall) {
-        call.respond(HttpStatusCode.InternalServerError, "Internal error")
     }
 
     private suspend fun PipelineContext<Unit, ApplicationCall>.withSession(function: suspend (String) -> Unit) {
