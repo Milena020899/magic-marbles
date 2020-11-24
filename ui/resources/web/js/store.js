@@ -7,6 +7,8 @@ const store = new Vuex.Store({
         showModal: false,
         highlightedMarbles: [],
         points: 0,
+        over: false,
+        stateId: 0
     },
     actions: {
         async startWithConfiguration({commit, dispatch}, settings) {
@@ -21,6 +23,7 @@ const store = new Vuex.Store({
 
                 if (response.status === 200) {
                     dispatch('startGame', await response.json())
+                    commit('setSettings', settings)
                 }
 
                 if (response.status === 400) {
@@ -43,10 +46,10 @@ const store = new Vuex.Store({
                 dispatch('toInitialState')
             }
         },
-        async move({commit, dispatch}, coordinates) {
+        async move({state, commit, dispatch}, coordinates) {
             let response = await fetch(`${window.location.href}/move`, {
                 ...defaultFetchConfig,
-                body: JSON.stringify(coordinates)
+                body: JSON.stringify({stateId: state.stateId, coordinates})
             })
 
             if (response.status === 200) {
@@ -57,14 +60,14 @@ const store = new Vuex.Store({
                 dispatch('toInitialState')
             }
 
-            if (response.status === 400) {
-                // TODO implement error display
+            if (response.status === 409) {
+                dispatch('syncState', await response.json())
             }
         },
-        async hover({commit, dispatch}, coordinates) {
+        async hover({state, commit, dispatch}, coordinates) {
             let response = await fetch(`${window.location.href}/hover`, {
                 ...defaultFetchConfig,
-                body: JSON.stringify(coordinates)
+                body: JSON.stringify({stateId: state.stateId, coordinates})
             })
 
             if (response.status === 200) {
@@ -75,9 +78,28 @@ const store = new Vuex.Store({
             if (response.status === 404) {
                 dispatch('toInitialState')
             }
+
+            if (response.status === 409) {
+                dispatch('syncState', await response.json())
+            }
+        },
+        async syncCall({dispatch}) {
+            let response = await fetch(`${window.location.href}/sync`, {
+                ...defaultFetchConfig
+            })
+            dispatch('syncState', await response.json())
+        },
+        syncState({commit, dispatch}, {settings, gameState}) {
+            if (gameState === null || gameState === undefined) {
+                dispatch('toInitialState')
+            } else {
+                dispatch('startGame', gameState)
+
+            }
+            commit('setSettings', settings)
         },
         toInitialState({commit}) {
-            commit('showModal')
+            commit('hideModal')
             commit('setNoGameRunning')
         },
         startGame({commit, dispatch}, gameState) {
@@ -85,9 +107,11 @@ const store = new Vuex.Store({
             commit('setGameRunning')
             commit('hideModal')
         },
-        updateGameState({commit}, {field, points}) {
+        updateGameState({commit}, {field, points, over, stateId}) {
             commit('setField', field);
             commit('setPoints', points);
+            commit('setGameOver', over)
+            commit('setStateId', stateId)
         },
     },
     mutations: {
@@ -121,6 +145,12 @@ const store = new Vuex.Store({
         },
         setPoints(state, points) {
             state.points = points;
+        },
+        setGameOver(state, gameOverState) {
+            state.over = gameOverState;
+        },
+        setStateId(state, stateId) {
+            state.stateId = stateId
         },
         highlightMarbles(state, marbles) {
             marbles.forEach((coord) => {

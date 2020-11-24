@@ -32,5 +32,5 @@ fun buildDIContainer(appConfig: ApplicationConfig): DI = DI {
     bind<GameFactory<ExtendedSettings>>() with provider { GameFactoryImpl(instance(), instance()) }
     bind<SettingsValidator>() with provider { SettingsValidatorImpl(instance()) }
     bind<ExtendedSettingsFactory>() with provider { ExtendedSettingsFactoryImpl() }
-    bind<GameServer>() with provider { GameServer(instance(), instance("defaultSettings")) }
+    bind<GameServer>() with provider { GameServer(instance(), instance(), instance("defaultSettings")) }
 }

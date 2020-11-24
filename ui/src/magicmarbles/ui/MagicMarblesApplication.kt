@@ -16,9 +16,10 @@ import io.ktor.util.pipeline.*
 import io.ktor.websocket.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import magicmarbles.ui.configuration.ApplicationConfig
-import magicmarbles.ui.dto.game.CoordinateDto
+import magicmarbles.ui.dto.game.MoveRequestDto
 import magicmarbles.ui.dto.settings.SettingsDto
 import magicmarbles.ui.util.throwOnFailure
 import org.kodein.di.DI
@@ -73,6 +74,13 @@ class MagicMarblesApplication {
         }
 
         routing {
+            post("/sync") {
+                withSession { sessionId ->
+                    val syncDto = gameServer.sync(sessionId)
+                    call.respond(Json { encodeDefaults = false }.encodeToString(syncDto))
+                }
+            }
+
             post("/startWithConfiguration") {
                 withSession { sessionId ->
                     val settings = call.receive<SettingsDto>()
@@ -92,8 +100,8 @@ class MagicMarblesApplication {
 
             post("/move") {
                 withSession { sessionId ->
-                    val coordinates = call.receive<CoordinateDto>()
-                    gameServer.move(sessionId, coordinates)
+                    val moveRequest = call.receive<MoveRequestDto>()
+                    gameServer.move(sessionId, moveRequest)
                         .onSuccess { call.respond(it) }
                         .throwOnFailure()
                 }
@@ -101,8 +109,8 @@ class MagicMarblesApplication {
 
             post("/hover") {
                 withSession { sessionId ->
-                    val coordinates = call.receive<CoordinateDto>()
-                    gameServer.hover(sessionId, coordinates)
+                    val hoverRequest = call.receive<MoveRequestDto>()
+                    gameServer.hover(sessionId, hoverRequest)
                         .onSuccess { call.respond(it) }
                         .throwOnFailure()
                 }

@@ -1,9 +1,7 @@
 Vue.component('settings', {
     store,
     data: function () {
-        return {
-            settings: {...this.$store.settings},
-        };
+        return {settings: this.$store.state.settings}
     },
     props: ['button-text'],
     template: `<form id="settings" @submit="submitSettings">
@@ -18,21 +16,27 @@ Vue.component('settings', {
                     <div class="settings-input-group">
                         <label for="minimumConnectedMarbles">Minimum of connected marbles</label>
                         <input id="minimumConnectedMarbles" class="settings-input" required v-model="settings.minimumConnectedMarbles" type="number" min="0" value="3"
-                            name="connectedMarbles">
+                            name="minimumConnectedMarbles">
                     </div>
                     <div class="settings-input-group">
                         <label for="remainingMarblePenalty">Remaining marble point reduction</label>
                         <input id="remainingMarblePenalty" class="settings-input" required v-model="settings.remainingMarblePenalty" type="number" min="0"
-                        value="50" name="remainingMarbleDeduction">
+                        value="50" name="remainingMarblePenalty">
                     </div>
                     <div id="form-errors" v-if="settingsErrors">
                         <div class="settings-error" v-for="error in settingsErrors">{{error}}</div>
                     </div>
                     <button id="configure" class="button" type="submit" name="reconfigure">{{buttonText}}</button>
                 </form>`,
+
     computed: {
         settingsErrors: function () {
             return this.$store.state.settingsErrors
+        },
+    },
+    watch: {
+        '$store.state.settings'(newVal) {
+            this.settings = newVal
         }
     },
     methods: {

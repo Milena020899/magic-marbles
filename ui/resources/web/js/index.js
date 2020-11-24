@@ -11,6 +11,9 @@ const app = new Vue({
         gameRunning: function () {
             return this.$store.state.gameRunning;
         },
+        gameOver: function () {
+            return this.$store.state.over;
+        },
         settingsModalConfig: function () {
             return {
                 closeable: this.$store.state.gameRunning,
@@ -21,9 +24,12 @@ const app = new Vue({
             };
         },
         blurStyle: function () {
-            if (this.$store.state.showModal && this.$store.state.gameRunning)
+            if (this.showModal && this.gameRunning || this.gameOver)
                 return {filter: 'blur(1.0rem)'};
             else return {};
         },
+    },
+    created: function () {
+        this.$store.dispatch('syncCall')
     }
 });

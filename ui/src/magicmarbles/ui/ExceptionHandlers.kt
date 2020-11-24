@@ -23,6 +23,7 @@ suspend fun exceptionHandler(call: ApplicationCall, ex: Exception) {
 
 private suspend fun handleMarbleExceptions(call: ApplicationCall, ex: MarbleGameException) {
     when (ex) {
+        is OutdatedStateException -> call.respond(HttpStatusCode.Conflict, ex.syncDto)
         is NoGameException -> call.respond(HttpStatusCode.NotFound, "No game found")
         is WrappedGameException -> handleGameException(call, ex.gameException)
         is WrappedFieldException -> handleFieldException(call, ex.fieldException)

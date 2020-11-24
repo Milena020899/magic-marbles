@@ -15,10 +15,13 @@
             :closeable="settingsModalConfig.closeable"
             v-if="showModal"
     >
-        <settings
-                :button-text="settingsModalConfig.buttonText"
-        ></settings>
+        <settings :button-text="settingsModalConfig.buttonText"></settings>
     </modal>
+
+    <modal title="Game Over" :closeable="false" v-if="gameOver">
+        You lost newb
+    </modal>
+
     <main id="content" :style="blurStyle">
         <div class="game-header-wrapper">
             <h1 id="game-header">Magic Marbles</h1>
@@ -27,9 +30,7 @@
         <div class="game-settings-wrapper" v-else>
             <div class="no-game-settings">
                 <h1 class="new-game-title">Start New Game</h1>
-                <settings
-                        button-text="Start Game"
-                ></settings>
+                <settings button-text="Start Game"></settings>
             </div>
         </div>
     </main>

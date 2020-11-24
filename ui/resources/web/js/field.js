@@ -73,7 +73,7 @@ Vue.component('game-field', {
         reconfigure: function () {
             this.$store.commit('showModal');
         },
-        debounce: function (debounceFuncId, func, timeout = 250) {
+        debounce: function (debounceFuncId, func, timeout = 150) {
             if (this[debounceFuncId]) {
                 clearTimeout(this[debounceFuncId]);
             }
