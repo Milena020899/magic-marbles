@@ -17,14 +17,14 @@ Vue.component('game-field', {
             </button>
             <div class="game-field" >
                 <div class="column" v-for="(col, colIndex) in field">
-                    <div
-                        class="marble"
-                        @mouseenter="marble ? startHover(colIndex, rowIndex) : null"
-                        @mouseleave="marble ? endHover() : null"
-                        @click="marble ? move(colIndex, rowIndex) : null"
-                        v-for="(marble, rowIndex) in col"
-                        :style="marbleStyle(marble)"
-                    ></div>
+                    <div v-for="(marble, rowIndex) in col" 
+                            class="marble-wrapper"
+                            @mouseenter="marble ? startHover(colIndex, rowIndex) : null"
+                            @mouseleave="marble ? endHover() : null"
+                            @click="marble ? move(colIndex, rowIndex) : null"
+                            :style="marbleWrapperStyle(marble)">
+                        <div class="marble" :style="marbleStyle(marble)"/>
+                    </div>
                 </div>
             </div>
         </div>`,
@@ -43,7 +43,6 @@ Vue.component('game-field', {
         marbleStyle: function (marble) {
             return marble
                 ? {
-                    cursor: 'pointer',
                     background: marble.color,
                     border: `4px solid ${
                         marble.highlight ? 'white' : 'transparent'
@@ -53,6 +52,13 @@ Vue.component('game-field', {
                     background: 'rgba(100, 100, 100, 0.3)',
                     border: '4px solid transparent',
                 };
+        },
+        marbleWrapperStyle: function (marble) {
+            return marble
+                ? {
+                    cursor: 'pointer',
+                }
+                : {};
         },
         move: function (column, row) {
             this.$store.dispatch('move', {column, row});

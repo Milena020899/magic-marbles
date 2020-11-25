@@ -1,11 +1,14 @@
 #game-over-wrapper {
     display: flex;
     flex-direction: column;
-    gap: 25px;
 }
 
 #game-over-message {
     width: fit-content;
-    margin: auto;
+    margin: auto auto 25px;
     font-size: large;
+}
+
+#game-over-restart-btn {
+    margin-bottom: 10px;
 }

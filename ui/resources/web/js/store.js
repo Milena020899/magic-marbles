@@ -99,6 +99,8 @@ const store = new Vuex.Store({
         toInitialState({commit}) {
             commit('hideModal')
             commit('setNoGameRunning')
+            commit('clearSettingsErrors')
+            commit('setGameOver', false)
         },
         startGame({commit, dispatch}, gameState) {
             dispatch('updateGameState', gameState)

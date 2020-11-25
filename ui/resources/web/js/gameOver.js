@@ -3,7 +3,8 @@ Vue.component('game-over', {
     template:
         `<div id="game-over-wrapper">
             <div id="game-over-message">You achieved {{points}} Points</div>
-            <button class="button" @click="restart">Restart</button>
+            <button id="game-over-restart-btn" class="button" @click="restart">Restart</button>
+            <button class="button" @click="toInitial">Reconfigure and Restart</button>
         </div>`,
     computed: {
         points: function () {
@@ -13,6 +14,9 @@ Vue.component('game-over', {
     methods: {
         restart: function () {
             this.$store.dispatch('restart');
+        },
+        toInitial: function () {
+            this.$store.dispatch('toInitialState');
         }
     }
 })
