@@ -19,8 +19,6 @@ const store = new Vuex.Store({
                     body: JSON.stringify(settings)
                 })
 
-                console.log(response.status)
-
                 if (response.status === 200) {
                     dispatch('startGame', await response.json())
                     commit('setSettings', settings)

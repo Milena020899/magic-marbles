@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="css/index.css"/>
     <link rel="stylesheet" href="css/modal.css"/>
     <link rel="stylesheet" href="css/settings.css"/>
+    <link rel="stylesheet" href="css/gameOver.css"/>
 </head>
 <body>
 <div id="app">
@@ -19,7 +20,7 @@
     </modal>
 
     <modal title="Game Over" :closeable="false" v-if="gameOver">
-        You lost newb
+        <game-over></game-over>
     </modal>
 
     <main id="content" :style="blurStyle">
@@ -37,6 +38,7 @@
 </div>
 <script type="text/javascript" src="js/store.js"></script>
 <script type="text/javascript" src="js/defaultFetchConfig.js"></script>
+<script type="text/javascript" src="js/gameOver.js"></script>
 <script type="text/javascript" src="js/modal.js"></script>
 <script type="text/javascript" src="js/settings.js"></script>
 <script type="text/javascript" src="js/field.js"></script>

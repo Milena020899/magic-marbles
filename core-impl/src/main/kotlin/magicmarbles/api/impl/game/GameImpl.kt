@@ -17,7 +17,7 @@ class GameImpl(
 ) : Game {
     override var field = fieldProvider()
     override var points: Int = 0
-    override var over: Boolean = false
+    override var over: Boolean = !field.movesPossible()
 
     override fun move(column: Int, row: Int): Result<Unit, GameException> {
         if (over) return Err(GameAlreadyOverException())

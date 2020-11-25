@@ -22,11 +22,7 @@ class GameServer(
 
     fun sync(id: String): SyncDto =
         getPlayerState(id)
-            .map {
-                return if (it.game.over) {
-                    SyncDto(it.settings.toDto(), null)
-                } else SyncDto(it.settings.toDto(), it.toGameStateDto())
-            }
+            .map { SyncDto(it.settings.toDto(), it.toGameStateDto()) }
             .recover { SyncDto(defaultSettings.toDto(), null) }
             .value
 
