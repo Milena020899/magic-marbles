@@ -1,11 +1,10 @@
 Vue.component('settings', {
     store,
     data: function () {
-        return {settings: this.$store.state.settings}
+        return { settings: this.$store.state.settings };
     },
     props: ['button-text'],
-    template:
-        `<form id="settings" @submit="submitSettings">
+    template: `<form id="settings" @submit="submitSettings">
             <div class="settings-input-group">
                 <label for="width">Field Width</label>
                 <input id="width" class="settings-input" v-model="settings.width" required type="number" min="0" value="10" name="width">
@@ -32,13 +31,13 @@ Vue.component('settings', {
 
     computed: {
         settingsErrors: function () {
-            return this.$store.state.settingsErrors
+            return this.$store.state.settingsErrors;
         },
     },
     watch: {
         '$store.state.settings'(newVal) {
-            this.settings = newVal
-        }
+            this.settings = newVal;
+        },
     },
     methods: {
         submitSettings: function (e) {

@@ -24,12 +24,12 @@ const app = new Vue({
             };
         },
         blurStyle: function () {
-            if (this.showModal && this.gameRunning || this.gameOver)
-                return {filter: 'blur(1.0rem)'};
+            if ((this.showModal && this.gameRunning) || this.gameOver)
+                return { filter: 'blur(1.0rem)' };
             else return {};
         },
     },
     created: function () {
-        this.$store.dispatch('syncCall')
-    }
+        this.$store.dispatch('syncCall');
+    },
 });

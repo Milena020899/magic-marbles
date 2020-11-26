@@ -37,8 +37,7 @@ class MagicMarblesApplication {
     data class GameSession(val id: String)
 
     private val di: DI = buildDIContainer(appConfig)
-
-
+    
     private val gameServer by di.instance<GameServer>()
 
     @ExperimentalCoroutinesApi

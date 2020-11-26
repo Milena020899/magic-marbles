@@ -1,48 +1,50 @@
 <!DOCTYPE html>
 <html>
-<head>
-    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
-    <script src="https://unpkg.com/vuex@2.0.0"></script>
-    <title>Magic Marble</title>
-    <link rel="stylesheet" href="css/index.css"/>
-    <link rel="stylesheet" href="css/modal.css"/>
-    <link rel="stylesheet" href="css/settings.css"/>
-    <link rel="stylesheet" href="css/gameOver.css"/>
-    <link rel="stylesheet" href="css/field.css"/>
-</head>
-<body>
-<div id="app">
-    <modal
-            :title="settingsModalConfig.title"
-            :closeable="settingsModalConfig.closeable"
-            v-if="showModal"
-    >
-        <settings :button-text="settingsModalConfig.buttonText"></settings>
-    </modal>
+    <head>
+        <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+        <script src="https://unpkg.com/vuex@2.0.0"></script>
+        <title>Magic Marble</title>
+        <link rel="stylesheet" href="css/index.css" />
+        <link rel="stylesheet" href="css/modal.css" />
+        <link rel="stylesheet" href="css/settings.css" />
+        <link rel="stylesheet" href="css/gameOver.css" />
+        <link rel="stylesheet" href="css/field.css" />
+    </head>
+    <body>
+        <div id="app">
+            <modal
+                :title="settingsModalConfig.title"
+                :closeable="settingsModalConfig.closeable"
+                v-if="showModal"
+            >
+                <settings
+                    :button-text="settingsModalConfig.buttonText"
+                ></settings>
+            </modal>
 
-    <modal title="Game Over" :closeable="false" v-if="gameOver">
-        <game-over></game-over>
-    </modal>
+            <modal title="Game Over" :closeable="false" v-if="gameOver">
+                <game-over></game-over>
+            </modal>
 
-    <main id="content" :style="blurStyle">
-        <div class="game-header-wrapper">
-            <h1 id="game-header">Magic Marbles</h1>
+            <main id="content" :style="blurStyle">
+                <div class="game-header-wrapper">
+                    <h1 id="game-header">Magic Marbles</h1>
+                </div>
+                <game-field v-if="gameRunning"></game-field>
+                <div class="game-settings-wrapper" v-else>
+                    <div class="no-game-settings">
+                        <h1 class="new-game-title">Start New Game</h1>
+                        <settings button-text="Start Game"></settings>
+                    </div>
+                </div>
+            </main>
         </div>
-        <game-field v-if="gameRunning"></game-field>
-        <div class="game-settings-wrapper" v-else>
-            <div class="no-game-settings">
-                <h1 class="new-game-title">Start New Game</h1>
-                <settings button-text="Start Game"></settings>
-            </div>
-        </div>
-    </main>
-</div>
-<script type="text/javascript" src="js/store.js"></script>
-<script type="text/javascript" src="js/defaultFetchConfig.js"></script>
-<script type="text/javascript" src="js/gameOver.js"></script>
-<script type="text/javascript" src="js/modal.js"></script>
-<script type="text/javascript" src="js/settings.js"></script>
-<script type="text/javascript" src="js/field.js"></script>
-<script type="text/javascript" src="js/index.js"></script>
-</body>
+        <script type="text/javascript" src="js/store.js"></script>
+        <script type="text/javascript" src="js/defaultFetchConfig.js"></script>
+        <script type="text/javascript" src="js/gameOver.js"></script>
+        <script type="text/javascript" src="js/modal.js"></script>
+        <script type="text/javascript" src="js/settings.js"></script>
+        <script type="text/javascript" src="js/field.js"></script>
+        <script type="text/javascript" src="js/index.js"></script>
+    </body>
 </html>

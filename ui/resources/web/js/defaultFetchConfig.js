@@ -1,6 +1,6 @@
 const defaultFetchConfig = {
-    method: "POST",
+    method: 'POST',
     headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
     },
-}
+};

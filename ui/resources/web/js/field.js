@@ -2,9 +2,7 @@ Vue.component('game-field', {
     store,
     template: `
         <div class="game-container" >
-            <div class="points">
-                Points: {{gameRunning ? points : '-'}}
-            </div>
+            <div class="points">Points: {{gameRunning ? points : '-'}}</div>
             <button
                 :disabled="!gameRunning"
                 @click="reconfigure"
@@ -37,35 +35,35 @@ Vue.component('game-field', {
         },
         field: function () {
             return this.$store.state.field;
-        }
+        },
     },
     methods: {
         marbleStyle: function (marble) {
             return marble
                 ? {
-                    background: marble.color,
-                    border: `4px solid ${
-                        marble.highlight ? 'white' : 'transparent'
-                    }`,
-                }
+                      background: marble.color,
+                      border: `4px solid ${
+                          marble.highlight ? 'white' : 'transparent'
+                      }`,
+                  }
                 : {
-                    background: 'rgba(100, 100, 100, 0.3)',
-                    border: '4px solid transparent',
-                };
+                      background: 'rgba(100, 100, 100, 0.3)',
+                      border: '4px solid transparent',
+                  };
         },
         marbleWrapperStyle: function (marble) {
             return marble
                 ? {
-                    cursor: 'pointer',
-                }
+                      cursor: 'pointer',
+                  }
                 : {};
         },
         move: function (column, row) {
-            this.$store.dispatch('move', {column, row});
+            this.$store.dispatch('move', { column, row });
         },
         startHover: function (column, row) {
             this.debounce('startHoverDebounce', () => {
-                this.$store.dispatch('hover', {column, row});
+                this.$store.dispatch('hover', { column, row });
             });
         },
         endHover: function () {
