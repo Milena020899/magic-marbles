@@ -14,7 +14,10 @@ import io.ktor.sessions.*
 import io.ktor.util.*
 import io.ktor.util.pipeline.*
 import io.ktor.websocket.*
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
@@ -37,7 +40,7 @@ class MagicMarblesApplication {
     data class GameSession(val id: String)
 
     private val di: DI = buildDIContainer(appConfig)
-    
+
     private val gameServer by di.instance<GameServer>()
 
     @ExperimentalCoroutinesApi
@@ -117,6 +120,13 @@ class MagicMarblesApplication {
             static {
                 defaultResource("index.html", "web")
                 resources("web")
+            }
+        }
+
+        launch(Dispatchers.Default) {
+            while (true) {
+                delay(1000 * 60 * 60)
+                gameServer.clearOldStates()
             }
         }
     }

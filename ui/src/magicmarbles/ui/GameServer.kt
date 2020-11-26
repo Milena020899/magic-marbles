@@ -8,6 +8,7 @@ import magicmarbles.api.impl.settings.factory.ExtendedSettingsFactory
 import magicmarbles.ui.dto.SyncDto
 import magicmarbles.ui.dto.game.*
 import magicmarbles.ui.dto.settings.SettingsDto
+import java.time.LocalDateTime
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 
@@ -16,12 +17,23 @@ class GameServer(
     private val settingsFactory: ExtendedSettingsFactory,
     private val defaultSettings: ExtendedSettings
 ) {
-    data class PlayerState(val game: Game, val settings: ExtendedSettings, var uniqueStateId: Int)
+    data class PlayerState(
+        val game: Game,
+        val settings: ExtendedSettings,
+        var uniqueStateId: Int,
+        var lastSeen: LocalDateTime
+    )
 
     private val activeGames = ConcurrentHashMap<String, PlayerState>()
 
+    fun clearOldStates() {
+        val clearLimit = LocalDateTime.now().minusSeconds(30)
+        activeGames.values.removeIf { it.lastSeen.isBefore(clearLimit) }
+    }
+
     fun sync(id: String): SyncDto =
         getPlayerState(id)
+            .onSuccess { updateLastSeen(it) }
             .map { SyncDto(it.settings.toDto(), it.toGameStateDto()) }
             .recover { SyncDto(defaultSettings.toDto(), null) }
             .value
@@ -33,7 +45,7 @@ class GameServer(
         val settings = settingsDto.toSettings()
         return gameFactory.createGame(settings)
             .map { game ->
-                PlayerState(game, settings, getUniqueId()).also {
+                PlayerState(game, settings, getUniqueId(), LocalDateTime.now()).also {
                     activeGames[id] = it
                 }
             }
@@ -43,6 +55,7 @@ class GameServer(
     fun restartGame(id: String): Result<GameStateDto, NoGameException> =
         getPlayerState(id)
             .onSuccess {
+                updateLastSeen(it)
                 it.game.restart()
                 it.uniqueStateId = getUniqueId()
             }
@@ -52,6 +65,7 @@ class GameServer(
 
     fun move(id: String, moveRequest: MoveRequestDto): Result<GameStateDto, MarbleGameException> =
         getPlayerState(id)
+            .onSuccess { updateLastSeen(it) }
             .flatMap { it.validateStateId(moveRequest.stateId) }
             .flatMap {
                 it.game.move(moveRequest.coordinates.column, moveRequest.coordinates.row)
@@ -67,6 +81,7 @@ class GameServer(
 
     fun hover(id: String, hoverRequest: MoveRequestDto): Result<HoverResultDto, MarbleGameException> =
         getPlayerState(id)
+            .onSuccess { updateLastSeen(it) }
             .flatMap { it.validateStateId(hoverRequest.stateId) }
             .flatMap {
                 it.game.field.getConnectedMarbles(hoverRequest.coordinates.column, hoverRequest.coordinates.row)
@@ -110,4 +125,8 @@ class GameServer(
             if (it == null) Err(NoGameException())
             else Ok(it)
         }
+
+    private fun updateLastSeen(playerState: PlayerState) {
+        playerState.lastSeen = LocalDateTime.now()
+    }
 }
