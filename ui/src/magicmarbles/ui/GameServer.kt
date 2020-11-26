@@ -33,9 +33,7 @@ class GameServer(
         val settings = settingsDto.toSettings()
         return gameFactory.createGame(settings)
             .map { game ->
-                val idq = getUniqueId()
-                println("ID $idq")
-                PlayerState(game, settings, idq).also {
+                PlayerState(game, settings, getUniqueId()).also {
                     activeGames[id] = it
                 }
             }

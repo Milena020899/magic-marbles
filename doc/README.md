@@ -100,6 +100,17 @@ With `move` the player can remove connected marbles.
 
 The `hover` method is used by the frontend to visualize which marbles are connected. It yields the coordinates of all connected marbles for a given marble.
 
+##### Screenshots
+
+Start Screen
+![Start Screen](images/start_screen.png)
+
+Game Screen
+![Game Screen](images/game_screen.png)
+
+Hover Indication
+![Hover](images/game_screen_hover.png)
+
 ### SOLID - Principles
 
 The implementation uses all five solid principles heavily. In the following for every principle it is described how it was used in the implementation.

@@ -29,7 +29,6 @@ import java.time.Duration
 fun main(args: Array<String>): Unit = io.ktor.server.netty.EngineMain.main(args)
 
 class MagicMarblesApplication {
-
     private val appConfig: ApplicationConfig =
         this::class.java.classLoader.getResource("appconfig.json")?.readText()?.let {
             Json.decodeFromString<ApplicationConfig>(it)
