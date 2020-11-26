@@ -16,7 +16,7 @@
   "defaultSettings": {
     "width": 10,
     "height": 10,
-    "remainingMarblePenalty": 50,
+    "remainingMarblePenalty": 10,
     "minimumConnectedMarbles": 3
   }
 }

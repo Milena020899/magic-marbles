@@ -25,8 +25,14 @@ const store = new Vuex.Store({
                 }
 
                 if (response.status === 400) {
-                    let {errors} = await response.json()
-                    commit('setSettingsErrors', errors)
+                    let errResponse = await response.json()
+
+                    if (errResponse.errors) {
+                        commit('setSettingsErrors', errResponse.errors)
+                    } else {
+                        commit('setSettingsErrors', [errResponse.error])
+                    }
+
                 }
             } catch (e) {
             }
