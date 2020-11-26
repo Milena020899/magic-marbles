@@ -17,7 +17,7 @@ class GameImpl(
 ) : Game {
     override var field = fieldProvider()
     override var points: Int = 0
-    override var over: Boolean = !field.movesPossible()
+    override var over: Boolean = initIsOver()
 
     override fun move(column: Int, row: Int): Result<Unit, GameException> =
         if (over) Err(GameAlreadyOverException())
@@ -32,6 +32,8 @@ class GameImpl(
     override fun restart() {
         field = fieldProvider()
         points = 0
-        over = false
+        over = initIsOver()
     }
+
+    private fun initIsOver() = !field.movesPossible()
 }
