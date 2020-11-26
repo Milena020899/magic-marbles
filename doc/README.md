@@ -1,16 +1,46 @@
 # Magic Marbles
 
-## Setup
+- [Magic Marbles](#magic-marbles)
+  - [Running The App](#running-the-app)
+    - [Local](#local)
+      - [Prerequisites](#prerequisites)
+      - [Starting The App](#starting-the-app)
+    - [Online](#online)
+  - [Implementation](#implementation)
+    - [Common Patterns](#common-patterns)
+      - [Abstract Factory](#abstract-factory)
+      - [Result Monad](#result-monad)
+      - [Dependency Injection](#dependency-injection)
+    - [Used Libraries](#used-libraries)
+    - [Architecture](#architecture)
+      - [Core](#core)
+      - [Core-Impl](#core-impl)
+      - [UI](#ui)
+        - [Screenshots](#screenshots)
+    - [SOLID - Principles](#solid---principles)
+      - [S - Single Responsibility Principle](#s---single-responsibility-principle)
+      - [O - Open-Closed Principle](#o---open-closed-principle)
+      - [L - Liskov Substitution Principle](#l---liskov-substitution-principle)
+      - [I - Interface Segregation Principle](#i---interface-segregation-principle)
+      - [D - Dependency Inversion Principle](#d---dependency-inversion-principle)
 
-### Prerequisites
+## Running The App
+
+### Local
+
+#### Prerequisites
 
 - JDK 8 installed & `JAVA_HOME` set
 
-### Running
+#### Starting The App
 
 1. Navigate the root directory and run `.\gradlew.bat :ui:run` to start the application
 2. Open the browser and navigate to `localhost:8080` to play the game
 3. to change the port start the gradle task with `--args="-port=9090"`
+
+### Online
+
+Launch it via [https://magic-marbles.azurewebsites.net/](https://magic-marbles.azurewebsites.net/)
 
 ## Implementation
 
@@ -29,10 +59,10 @@ The creation of e.g. a `Game` instance or the field of a game is all done via fa
 
 #### Result Monad
 
-Another commonly used "pattern" is the use of a `Result` Monad as return type. This means an operation either yield a successful result value or an error. For example the method to remove a marble on a field can return either the amount of marbles which where removed or the error which occurred.
+Another commonly used "pattern" is the use of `Result` Monads as return type. This means an operation can either yield a successful result value or an error. For example the method to remove a marble from a field returns either the amount of marbles which where removed or the exception which was caused.
 
-With methods like `map` or `flatMap` the successful value of a `Result` can be used to do further operations.
-The advantage of this is a sort of fail fast behaviour, meaning if the first operation fails the second one doesn't need to be executed.
+With methods like `map` or `flatMap` the successful result value of a `Result` can be used to do further operations. Also with methods like `onSuccess` specific code can be executed when the `Result` contains a successful value.
+The advantage of this is a sort of fail fast behaviour, meaning if the first operation fails the following ones do not need to be executed.
 
 #### Dependency Injection
 
@@ -41,18 +71,19 @@ Additionally all dependencies are injected via dependency injection. This allows
 ### Used Libraries
 
 - Frontend
-  - Vue: SPA Framework
-  - Vuex: State Management Library
+  - Vue: SPA Framework (<https://github.com/vuejs/vue>)
+  - Vuex: State Management Library (<https://github.com/vuejs/vuex>)
 - Backend
-  - Result: Result Monad for Kotlin
-  - KTOR: Web Server for Kotlin
-  - kotlinx.serialization: Serializer for Kotlin
-  - Kodein: Dependency Injection Framework
+  - Result: Result Monad for Kotlin (<https://github.com/michaelbull/kotlin-result>)
+  - KTOR: Web Server for Kotlin (<https://github.com/ktorio/ktor>)
+  - kotlinx.serialization: JSON Serializer for Kotlin (<https://github.com/Kotlin/kotlinx.serialization>)
+  - Kodein: Dependency Injection Framework (<https://github.com/Kodein-Framework/Kodein-DI>)
 
 ### Architecture
 
 #### Core
 
+Diagram of all provided interfaces
 ![core](images/api.svg)
 
 The `core` module provides the interfaces as well as some data containers like `Color` and `Marble` for the magic marble game.
@@ -63,6 +94,7 @@ The `GameFactory` as well as the `FieldBuilder` can be parameterized via a `Sett
 
 #### Core-Impl
 
+Diagram of all interfaces with respective implementation
 ![impl](images/full.svg)
 
 The `core-impl` module uses the interfaces defined in [Core](#core) and implements them.
@@ -88,7 +120,9 @@ Through the UI the user can
 - Remove connected marbles
 - Hover over marbles to see which are connected
 
-The Frontend and web API communicate via HTTP calls. The API exposes four operations: `sync`, `startWithConfiguration`, `move` and `hover`. To identify the player in the API every player receives a session in form of a cookie.
+(See more @ [Screenshots](#screenshots))
+
+The frontend and web API communicate via HTTP calls. The API exposes four operations: `sync`, `startWithConfiguration`, `move` and `hover`. To identify the player in the API every player receives a session in form of a cookie.
 
 `sync` is used to synchronize the game state at application start-up. For example if a player closes the browser window and opens it again the application will sync the last known state so the player can continue where he left off.
 
@@ -121,9 +155,9 @@ The implementation strictly follows the single responsibility principle by separ
 
 #### O - Open-Closed Principle
 
-The open-closed principle does not really find application in the magic marbles implementation since large inheritance hierarchies are avoided in general.
+The open-closed principle does not really find application in the magic marbles implementation since inheritance hierarchies are avoided in general.
 
-The only point where this would find application is in the translation from Exceptions to HTTP responses. But in this case i chose against it, since the exception should not know that it might be transformed to a HTTP message. Also implementing a different UI would not be possible.
+The only point where this would find application is in the translation from exceptions to HTTP responses. But in this case i chose against it, since the exception should not know that it might be transformed to a HTTP message. It also would not be adaptable for different UI implementations
 
 #### L - Liskov Substitution Principle
 
