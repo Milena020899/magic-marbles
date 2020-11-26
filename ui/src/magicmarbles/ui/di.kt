@@ -8,8 +8,8 @@ import magicmarbles.api.impl.field.FieldImpl
 import magicmarbles.api.impl.field.RandomFieldBuilder
 import magicmarbles.api.impl.game.GameFactoryImpl
 import magicmarbles.api.impl.settings.ExtendedSettings
+import magicmarbles.api.impl.settings.ExtendedSettingsImpl
 import magicmarbles.api.impl.settings.factory.ExtendedSettingsFactory
-import magicmarbles.api.impl.settings.factory.ExtendedSettingsFactoryImpl
 import magicmarbles.api.impl.settings.validator.SettingsValidator
 import magicmarbles.api.impl.settings.validator.SettingsValidatorImpl
 import magicmarbles.ui.configuration.ApplicationConfig
@@ -31,6 +31,6 @@ fun buildDIContainer(appConfig: ApplicationConfig): DI = DI {
     bind<FieldBuilder<ExtendedSettings>>() with provider { RandomFieldBuilder(instance()) }
     bind<GameFactory<ExtendedSettings>>() with provider { GameFactoryImpl(instance(), instance()) }
     bind<SettingsValidator>() with provider { SettingsValidatorImpl(instance()) }
-    bind<ExtendedSettingsFactory>() with provider { ExtendedSettingsFactoryImpl() }
+    bind<ExtendedSettingsFactory>() with provider { ExtendedSettingsImpl.Factory }
     bind<GameServer>() with provider { GameServer(instance(), instance(), instance("defaultSettings")) }
 }
