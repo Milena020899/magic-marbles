@@ -1,10 +1,13 @@
 val ktor_version: String by project
 val kotlin_version: String by project
 val logback_version: String by project
+val serialization_version: String by project
+val result_version: String by project
+val kodein_version: String by project
 
 plugins {
     application
-    kotlin("jvm") version "1.4.10"
+    kotlin("jvm")
     kotlin("plugin.serialization") version "1.4.10"
 }
 
@@ -30,8 +33,10 @@ repositories {
 }
 
 dependencies {
+    implementation(project(":core-impl"))
+    implementation(project(":core"))
     implementation("io.ktor:ktor-serialization:$ktor_version")
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.0.1")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:$serialization_version")
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version")
     implementation("io.ktor:ktor-server-netty:$ktor_version")
     implementation("ch.qos.logback:logback-classic:$logback_version")
@@ -40,10 +45,8 @@ dependencies {
     implementation("io.ktor:ktor-server-sessions:$ktor_version")
     implementation("io.ktor:ktor-websockets:$ktor_version")
     testImplementation("io.ktor:ktor-server-tests:$ktor_version")
-    implementation(project(":core-impl"))
-    implementation(project(":core"))
-    implementation("com.michael-bull.kotlin-result:kotlin-result:1.1.9")
-    implementation("org.kodein.di:kodein-di:7.1.0")
+    implementation("com.michael-bull.kotlin-result:kotlin-result:$result_version")
+    implementation("org.kodein.di:kodein-di:$kodein_version")
 }
 
 kotlin.sourceSets["main"].kotlin.srcDirs("src")
