@@ -19,17 +19,15 @@ class GameImpl(
     override var points: Int = 0
     override var over: Boolean = !field.movesPossible()
 
-    override fun move(column: Int, row: Int): Result<Unit, GameException> {
-        if (over) return Err(GameAlreadyOverException())
-
-        return field.move(column, row)
+    override fun move(column: Int, row: Int): Result<Unit, GameException> =
+        if (over) Err(GameAlreadyOverException())
+        else field.move(column, row)
             .onSuccess {
                 points += settings.pointCalculation(it)
                 if (!field.movesPossible()) {
                     over = true
                 }
-            }.mapEither({ Unit }, { InvalidMoveException(it) })
-    }
+            }.mapEither({ }, { InvalidMoveException(it) })
 
     override fun restart() {
         field = fieldProvider()
