@@ -18,10 +18,10 @@ jobs:
     - name: Set up Java version
       uses: actions/setup-java@v1
       with:
-        java-version: '8'
+        java-version: 1.8
 
-    - name: Build with Maven
-      run: mvn clean install
+    - name: shadowJar
+      run: ./gradlew shadowJar
 
     - name: Deploy to Azure Web App
       uses: azure/webapps-deploy@v2
@@ -29,4 +29,4 @@ jobs:
         app-name: 'magic-marbles'
         slot-name: 'production'
         publish-profile: ${{ secrets.AzureAppService_PublishProfile_5f5a4e8a068d440092c4572a35fd6a83 }}
-        package: '${{ github.workspace }}/target/*.jar'
+        package: '${{ github.workspace }}/ui/build/libs/*.jar'
