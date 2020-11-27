@@ -1,7 +1,7 @@
 Vue.component('settings', {
     store,
     data: function () {
-        return { settings: this.$store.state.settings };
+        return {settings: this.$store.state.settings};
     },
     props: ['button-text'],
     template: `<form id="settings" @submit="submitSettings">

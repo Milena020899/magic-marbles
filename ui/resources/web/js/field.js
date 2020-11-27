@@ -2,15 +2,15 @@ Vue.component('game-field', {
     store,
     template: `
         <div class="game-container" >
-            <div class="points">Points: {{gameRunning ? points : '-'}}</div>
+            <div class="points">Points: {{gameStatePresent ? points : '-'}}</div>
             <button
-                :disabled="!gameRunning"
+                :disabled="!gameStatePresent"
                 @click="reconfigure"
                 class="reconfigure button"
             >
                 Reconfigure
             </button>
-            <button :disabled="!gameRunning" @click="restart" class="restart button">
+            <button :disabled="!gameStatePresent" @click="restart" class="restart button">
                 Restart Game
             </button>
             <div class="game-field" >
@@ -27,8 +27,8 @@ Vue.component('game-field', {
             </div>
         </div>`,
     computed: {
-        gameRunning: function () {
-            return this.$store.state.gameRunning;
+        gameStatePresent: function () {
+            return this.$store.getters.gameStatePresent;
         },
         points: function () {
             return this.$store.state.points;
@@ -41,29 +41,29 @@ Vue.component('game-field', {
         marbleStyle: function (marble) {
             return marble
                 ? {
-                      background: marble.color,
-                      border: `4px solid ${
-                          marble.highlight ? 'white' : 'transparent'
-                      }`,
-                  }
+                    background: marble.color,
+                    border: `4px solid ${
+                        marble.highlight ? 'white' : 'transparent'
+                    }`,
+                }
                 : {
-                      background: 'rgba(100, 100, 100, 0.3)',
-                      border: '4px solid transparent',
-                  };
+                    background: 'rgba(100, 100, 100, 0.3)',
+                    border: '4px solid transparent',
+                };
         },
         marbleWrapperStyle: function (marble) {
             return marble
                 ? {
-                      cursor: 'pointer',
-                  }
+                    cursor: 'pointer',
+                }
                 : {};
         },
         move: function (column, row) {
-            this.$store.dispatch('move', { column, row });
+            this.$store.dispatch('move', {column, row});
         },
         startHover: function (column, row) {
             this.debounce('startHoverDebounce', () => {
-                this.$store.dispatch('hover', { column, row });
+                this.$store.dispatch('hover', {column, row});
             });
         },
         endHover: function () {

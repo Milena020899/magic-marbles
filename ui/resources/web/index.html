@@ -30,7 +30,7 @@
         <div class="game-header-wrapper">
             <h1 id="game-header">Magic Marbles</h1>
         </div>
-        <game-field v-if="gameRunning"></game-field>
+        <game-field v-if="gameStatePresent"></game-field>
         <div class="game-settings-wrapper" v-else>
             <div class="no-game-settings">
                 <h1 class="new-game-title">Start New Game</h1>
