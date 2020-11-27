@@ -16,7 +16,9 @@
       - [Core](#core)
       - [Core-Impl](#core-impl)
       - [UI](#ui)
-        - [Screenshots](#screenshots)
+        - [API](#api)
+        - [Frontend](#frontend)
+          - [Screenshots](#screenshots)
     - [SOLID - Principles](#solid---principles)
       - [S - Single Responsibility Principle](#s---single-responsibility-principle)
       - [O - Open-Closed Principle](#o---open-closed-principle)
@@ -84,7 +86,7 @@ Additionally all dependencies are injected via dependency injection. This allows
 #### Core
 
 Diagram of all provided interfaces
-![core](images/api.svg)
+![core](/doc/images/api.svg)
 
 The `core` module provides the interfaces as well as some data containers like `Color` and `Marble` for the magic marble game.
 The two primary interfaces are `Game` which provides the operations to play the game and `Field` which models the field of the game. The `Field` interface is abstracted further and has two sub interfaces `PlayableField` and `ModifiableField`. The `ModifiableField` is only used for initializing the field and the `PlayableField` for playing.
@@ -95,7 +97,7 @@ The `GameFactory` as well as the `FieldBuilder` can be parameterized via a `Sett
 #### Core-Impl
 
 Diagram of all interfaces with respective implementation
-![impl](images/full.svg)
+![impl](/doc/images/full.svg)
 
 The `core-impl` module uses the interfaces defined in [Core](#core) and implements them.
 
@@ -109,7 +111,28 @@ Furthermore it is easier to restart the game since the `GameImpl` only has to ca
 
 #### UI
 
-The `ui` module basically only consists of the web API which handles requests, the `GameServer` which stores the state of all games and changes it accordingly, a few DTOs for exposing internal state to the API consumers and the frontend.
+The `ui` module consists of two parts, the web API which handles requests and the frontend.
+
+##### API
+
+The API is the communication endpoint for the frontend. To associate a player with a game, the player gets a session token from the API in form of a cookie.
+The API exposes four operation with which the frontend can "modify" the current game.
+These operations are `sync`, `startWithConfiguration`, `move` and `hover`
+
+`sync` is used to synchronize the game state at application start-up. For example if a player closes the browser window and opens it again the application will sync the last known state so the player can continue where he left off.
+
+Furthermore the game uses a "syncing strategy" to prevent players from playing the game in an outdated state. For example the player plays the game and then opens a second browser window to continue the game there (Which is possible because of the aforementioned session token).
+To prevent the player from playing on an outdated state in the original window, each game state gets a unique id.
+If the player makes a move or starts a new game a new id is generated. This id is exchanged between the frontend and API, so that the API can check on every request that the player has the most recent game state.
+If the frontend provides an id does not match the latest one stored by the API, the latest state gets automatically sent to the frontend.
+
+With `startWithConfiguration` a new game with the provided settings can be started. These settings is validated, and any errors will be returned to the frontend.
+
+With `move` the frontend can remove connected marbles.
+
+The `hover` method yields the coordinates of all connected marbles for a given marble. It is used by the frontend to visualize which marbles are connected.
+
+##### Frontend
 
 For the frontend the SPA-Framework Vue was used in combination with Vuex as state management library.
 Through the UI the user can
@@ -120,30 +143,16 @@ Through the UI the user can
 - Remove connected marbles
 - Hover over marbles to see which are connected
 
-(See more @ [Screenshots](#screenshots))
-
-The frontend and web API communicate via HTTP calls. The API exposes four operations: `sync`, `startWithConfiguration`, `move` and `hover`. To identify the player in the API every player receives a session in form of a cookie.
-
-`sync` is used to synchronize the game state at application start-up. For example if a player closes the browser window and opens it again the application will sync the last known state so the player can continue where he left off.
-
-Furthermore the game uses a "syncing strategy" to prevent players from playing the game in an outdated state. For example the player plays the game and then opens a second browser window to continue the game there. To prevent the player from playing on an outdated state in the original window, each game state gets a unique id. If the player makes a move a new id is generated. This id gets exchanged between UI and API. If the player tries to make a move and provides an id that does not match the current saved state, he automatically receives the new state.
-
-With `startWithConfiguration` the player can start a game with the given configuration. This configuration is validated, and any errors will be displayed in the configuration UI.
-
-With `move` the player can remove connected marbles.
-
-The `hover` method is used by the frontend to visualize which marbles are connected. It yields the coordinates of all connected marbles for a given marble.
-
-##### Screenshots
+###### Screenshots
 
 Start Screen
-![Start Screen](images/start_screen.png)
+![Start Screen](/doc/images/start_screen.png)
 
 Game Screen
-![Game Screen](images/game_screen.png)
+![Game Screen](/doc/images/game_screen.png)
 
 Hover Indication
-![Hover](images/game_screen_hover.png)
+![Hover](/doc/images/game_screen_hover.png)
 
 ### SOLID - Principles
 
