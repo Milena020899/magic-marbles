@@ -159,7 +159,7 @@ const store = new Vuex.Store({
             });
         },
         removeHighlight(state) {
-            state.field.forEach((column) =>
+            state.field?.forEach((column) =>
                 column.forEach((marble) => {
                     if (marble) {
                         marble.highlight = false;

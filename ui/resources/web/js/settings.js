@@ -1,7 +1,15 @@
 Vue.component('settings', {
     store,
     data: function () {
-        return {settings: this.$store.state.settings};
+        return {
+            settings: {
+                width: 0,
+                height: 0,
+                minimumConnectedMarbles: 0,
+                remainingMarblePenalty: 0,
+                ...this.$store.state.settings
+            }
+        };
     },
     props: ['button-text'],
     template: `<form id="settings" @submit="submitSettings">
