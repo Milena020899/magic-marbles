@@ -5,7 +5,6 @@
     - [Local](#local)
       - [Prerequisites](#prerequisites)
       - [Starting The App](#starting-the-app)
-    - [Online](#online)
   - [Implementation](#implementation)
     - [Common Patterns](#common-patterns)
       - [Abstract Factory](#abstract-factory)
@@ -39,10 +38,6 @@
 1. Navigate the root directory and run `.\gradlew.bat :ui:run` to start the application
 2. Open the browser and navigate to `localhost:8080` to play the game
 3. to change the port start the gradle task with `--args="-port=9090"`
-
-### Online
-
-Launch it via [https://magic-marbles.azurewebsites.net/](https://magic-marbles.azurewebsites.net/)
 
 ## Implementation
 
@@ -135,7 +130,7 @@ The `hover` method yields the coordinates of all connected marbles for a given m
 ##### Frontend
 
 For the frontend the SPA-Framework Vue was used in combination with Vuex as state management library.
-Through the UI the user can
+Through the UI the user can:
 
 - Start a game, by entering the desired settings
 - Restart a game with the current configuration
