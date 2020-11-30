@@ -141,12 +141,15 @@ Through the UI the user can:
 ###### Screenshots
 
 Start Screen
+
 ![Start Screen](/doc/images/start_screen.png)
 
 Game Screen
+
 ![Game Screen](/doc/images/game_screen.png)
 
 Hover Indication
+
 ![Hover](/doc/images/game_screen_hover.png)
 
 ### SOLID - Principles
@@ -159,9 +162,9 @@ The implementation strictly follows the single responsibility principle by separ
 
 #### O - Open-Closed Principle
 
-The open-closed principle does not really find application in the magic marbles implementation since inheritance hierarchies are avoided in general.
-
-The only point where this would find application is in the translation from exceptions to HTTP responses. But in this case i chose against it, since the exception should not know that it might be transformed to a HTTP message. It also would not be adaptable for different UI implementations
+The open-closed principle does also find broad application in the implementation of magic marbles.
+Through the abstraction through interfaces and the injection of those interfaces, the system is open for extension since new interface implementations can be created and used without modification of existing code.
+But the system is also closed for modification since new implementations are bound by a given API interface.
 
 #### L - Liskov Substitution Principle
 
